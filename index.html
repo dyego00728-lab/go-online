@@ -3,32 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#121417" />
-  <title>Go Online — Weiqi / Baduk</title>
+  <title>Go Online — Tabuleiro & Loja</title>
   <style>
     :root {
-      --bg: #121417;
-      --panel: #1b1f24;
-      --panel-2: #232830;
-      --text: #f3f5f8;
-      --muted: #9aa3b2;
-      --accent: #e5a93c;
-      --accent-2: #2ea043;
-      --border: rgba(255,255,255,0.09);
-      --board: #dcb168;
-      --line: #2b1d0e;
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card-2: #0b1120;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #22c55e;
+      --accent-2: #16a34a;
+      --gold: #f59e0b;
+      --border: #334155;
+      --board: #d9a05b;
+      --line: #3b2314;
     }
 
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      -webkit-user-select: none;
     }
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100dvh;
@@ -37,658 +35,688 @@
     }
 
     header {
+      background: var(--card-2);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 14px;
-      background: var(--panel);
-      border-bottom: 1px solid var(--border);
-      gap: 8px;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
     }
 
     .brand {
-      font-weight: 700;
-      font-size: 1rem;
-      letter-spacing: 0.3px;
-    }
-
-    .brand span {
-      color: var(--accent);
-    }
-
-    .tabs {
+      font-weight: 800;
+      font-size: 1.05rem;
       display: flex;
-      gap: 6px;
+      align-items: center;
+      gap: 8px;
     }
 
-    .tab-btn {
-      background: var(--panel-2);
-      color: var(--muted);
+    .wallet-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card);
       border: 1px solid var(--border);
       padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
     }
 
-    .tab-btn.active {
-      background: var(--accent);
-      color: #111;
-      border-color: var(--accent);
+    .vip-badge {
+      background: var(--gold);
+      color: #111827;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      display: none;
+    }
+
+    .vip-badge.active {
+      display: inline-block;
+    }
+
+    nav.tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: var(--card-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav.tabs button {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 12px 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+    }
+
+    nav.tabs button.active {
+      color: var(--text);
+      border-bottom-color: var(--accent);
+      background: rgba(34, 197, 94, 0.08);
     }
 
     main {
       flex: 1;
-      padding: 12px;
-      max-width: 680px;
+      padding: 14px;
+      max-width: 640px;
       width: 100%;
       margin: 0 auto;
     }
 
-    .view {
+    .tab-panel {
       display: none;
     }
 
-    .view.active {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    .tab-panel.active {
+      display: block;
     }
 
-    .hud {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-    }
-
-    .stat {
-      background: var(--panel);
+    .card {
+      background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 8px;
-      text-align: center;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
     }
 
-    .stat .label {
-      font-size: 0.7rem;
+    h2 {
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+    }
+
+    p.hint {
+      margin: 0 0 12px;
       color: var(--muted);
-      display: block;
-    }
-
-    .stat .val {
-      font-size: 0.95rem;
-      font-weight: 700;
-      margin-top: 2px;
-      display: block;
-    }
-
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      background: var(--panel);
-      padding: 10px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-
-    select, button, input {
-      font-family: inherit;
       font-size: 0.88rem;
-      border-radius: 8px;
-    }
-
-    select, input {
-      background: var(--panel-2);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 8px 10px;
-    }
-
-    .btn {
-      background: var(--panel-2);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .btn.primary {
-      background: var(--accent);
-      color: #111;
-      border: none;
-    }
-
-    .btn.success {
-      background: var(--accent-2);
-      color: #fff;
-      border: none;
+      line-height: 1.45;
     }
 
     .board-wrap {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      background: var(--panel);
-      padding: 12px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
+      justify-content: center;
+      margin: 8px 0 12px;
     }
 
-    .turn-bar {
+    canvas#goBoard {
       width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.88rem;
-      color: var(--muted);
-    }
-
-    .turn-bar strong {
-      color: var(--text);
-    }
-
-    canvas {
-      width: 100%;
-      max-width: 440px;
+      max-width: 420px;
       aspect-ratio: 1 / 1;
-      border-radius: 10px;
-      touch-action: manipulation;
-      display: block;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.45);
-    }
-
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--border);
+      background: var(--board);
       border-radius: 12px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .card h3 {
-      margin: 0;
-      font-size: 1rem;
-    }
-
-    .card p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.86rem;
-      line-height: 1.4;
-    }
-
-    .rank-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .rank-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--panel-2);
-      padding: 10px 12px;
-      border-radius: 10px;
-      font-size: 0.88rem;
-    }
-
-    .badge {
-      background: rgba(229,169,60,0.16);
-      color: var(--accent);
-      padding: 3px 8px;
-      border-radius: 999px;
-      font-size: 0.76rem;
-      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+      touch-action: manipulation;
     }
 
     .row {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
-      align-items: center;
     }
 
-    .msg {
-      font-size: 0.84rem;
-      color: var(--accent);
-      min-height: 18px;
+    button.btn {
+      background: var(--accent);
+      color: #052e16;
+      border: none;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    button.btn.secondary {
+      background: var(--card-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    button.btn.gold {
+      background: var(--gold);
+      color: #111827;
+    }
+
+    input.field {
+      width: 100%;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 11px 12px;
+      font-size: 0.92rem;
+      margin-bottom: 10px;
+    }
+
+    .status-box {
+      background: var(--card-2);
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 10px;
+      word-break: break-word;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111827;
+      color: #f8fafc;
+      border: 1px solid var(--accent);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 50;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 9px 6px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="brand">GO <span>ONLINE</span></div>
-    <nav class="tabs">
-      <button class="tab-btn active" data-tab="game">Tabuleiro</button>
-      <button class="tab-btn" data-tab="rank">Ranking</button>
-      <button class="tab-btn" data-tab="monetize">Loja &amp; Ganhar</button>
-    </nav>
+    <div class="brand">⚫⚪ Go Online</div>
+    <div class="wallet-pill">
+      <span>🪙 <strong id="fichasCount">50</strong></span>
+      <span id="vipBadge" class="vip-badge">VIP</span>
+    </div>
   </header>
 
+  <nav class="tabs">
+    <button class="active" data-tab="tabuleiro">Tabuleiro</button>
+    <button data-tab="ranking">Ranking</button>
+    <button data-tab="loja">Loja & Ganhar</button>
+  </nav>
+
   <main>
-    <section id="view-game" class="view active">
-      <div class="hud">
-        <div class="stat"><span class="label">Pontos</span><span class="val" id="hud-pts">1200</span></div>
-        <div class="stat"><span class="label">Vitórias</span><span class="val" id="hud-wins">0</span></div>
-        <div class="stat"><span class="label">Capturas P/B</span><span class="val" id="hud-cap">0 / 0</span></div>
-        <div class="stat"><span class="label">Fichas</span><span class="val" id="hud-coins">50</span></div>
-      </div>
-
-      <div class="controls">
-        <select id="sel-size">
-          <option value="9">9×9 Rápido</option>
-          <option value="13">13×13 Médio</option>
-          <option value="19">19×19 Clássico</option>
-        </select>
-        <select id="sel-mode">
-          <option value="ai">vs IA</option>
-          <option value="pvp">2 Jogadores (Local)</option>
-        </select>
-        <select id="sel-theme">
-          <option value="kaya">Madeira Kaya</option>
-          <option value="walnut">Nogueira Escura</option>
-          <option value="jade">Jade &amp; Pedra</option>
-        </select>
-        <button class="btn primary" id="btn-new">Nova Partida</button>
-        <button class="btn" id="btn-pass">Passar Vez</button>
-        <button class="btn" id="btn-score">Encerrar e Pontuar</button>
-      </div>
-
-      <div class="board-wrap">
-        <div class="turn-bar">
-          <span>Vez: <strong id="turn-text">Preto (Você)</strong></span>
-          <span id="status-text">Toque em uma interseção</span>
-        </div>
-        <canvas id="goban" width="600" height="600"></canvas>
-      </div>
-    </section>
-
-    <section id="view-rank" class="view">
+    <!-- TABULEIRO -->
+    <section id="tabuleiro" class="tab-panel active">
       <div class="card">
-        <h3>Seu Perfil de Ranking</h3>
+        <h2>Partida de Go (9x9)</h2>
+        <p class="hint" id="turnInfo">Vez das Pretas (Você). Toque em uma interseção para jogar.</p>
+        <div class="board-wrap">
+          <canvas id="goBoard" width="420" height="420"></canvas>
+        </div>
         <div class="row">
-          <input id="inp-nick" placeholder="Seu apelido" maxlength="18" />
-          <input id="inp-city" placeholder="Sua cidade" maxlength="24" />
-          <button class="btn primary" id="btn-save-profile">Salvar</button>
+          <button class="btn secondary" id="passBtn">Passar Vez</button>
+          <button class="btn secondary" id="resetBtn">Nova Partida</button>
         </div>
-        <div class="msg" id="profile-msg"></div>
-      </div>
-
-      <div class="card">
-        <div class="row" style="justify-content: space-between;">
-          <h3>Ranking da Cidade (<span id="rank-city-label">Sua Cidade</span>)</h3>
-          <span class="badge">Local + Jogador</span>
-        </div>
-        <div class="rank-list" id="city-rank-list"></div>
-      </div>
-
-      <div class="card">
-        <div class="row" style="justify-content: space-between;">
-          <h3>Ranking Mundial</h3>
-          <span class="badge">Global</span>
-        </div>
-        <div class="rank-list" id="world-rank-list"></div>
       </div>
     </section>
 
-    <section id="view-monetize" class="view">
+    <!-- RANKING -->
+    <section id="ranking" class="tab-panel">
       <div class="card">
-        <h3>Como Ganhar com o Jogo</h3>
-        <p>
-          Configure sua chave de recebimento (ex.: Pix/pagamento), venda itens cosméticos ou passe sem anúncios
-          e acompanhe seu saldo de demonstração ou real.
+        <h2>Ranking Local</h2>
+        <p class="hint">Pontuação salva neste dispositivo.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Jogador</th>
+              <th>Vitórias</th>
+              <th>Fichas</th>
+            </tr>
+          </thead>
+          <tbody id="rankingBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- LOJA & GANHAR -->
+    <section id="loja" class="tab-panel">
+      <div class="card">
+        <h2>Receber Dinheiro Real (Pix & Link)</h2>
+        <p class="hint">
+          Sua chave Pix já está configurada. Você também pode adicionar um link de pagamento real (ex.: Mercado Pago, InfinitePay ou checkout) para abrir direto no navegador.
         </p>
+
+        <label class="hint" style="display:block;margin-bottom:4px;">Sua Chave Pix</label>
+        <input class="field" id="pixInput" type="text" placeholder="Ex.: seuemail@dominio.com ou chave aleatória" />
+
+        <label class="hint" style="display:block;margin-bottom:4px;">Link de Pagamento Real (URL https://...)</label>
+        <input class="field" id="payLinkInput" type="url" placeholder="https://link-de-pagamento-real.com/seu-produto" />
+
         <div class="row">
-          <input id="inp-pix" placeholder="Sua chave Pix ou link de apoio" style="flex:1; min-width:180px;" />
-          <button class="btn success" id="btn-save-pix">Salvar Recebimento</button>
+          <button class="btn" id="savePaymentBtn">Salvar Dados</button>
+          <button class="btn secondary" id="copyPixBtn">Copiar Pix</button>
         </div>
-        <div class="msg" id="pix-msg"></div>
-      </div>
 
-      <div class="card">
-        <h3>Loja &amp; Pacotes</h3>
-        <div class="rank-item">
-          <div>
-            <strong>Passe Sem Anúncios (VIP)</strong><br />
-            <small style="color:var(--muted)">Remove banners entre partidas e libera +100 fichas</small>
-          </div>
-          <button class="btn primary" id="btn-buy-vip">Ativar (20 fichas)</button>
+        <div class="row" style="margin-top:8px;">
+          <button class="btn gold" id="openPayLinkBtn">Abrir Link de Pagamento</button>
         </div>
-        <div class="rank-item">
-          <div>
-            <strong>Pacote de Fichas (+150)</strong><br />
-            <small style="color:var(--muted)">Use para desbloquear itens e testes de loja</small>
-          </div>
-          <button class="btn" id="btn-buy-coins">Resgatar +150</button>
+
+        <div class="status-box" id="creatorSummary">
+          Pix: e2dd5b9e-de3b-4a07-a14e-76172ed64a3a • Link não definido
         </div>
       </div>
 
       <div class="card">
-        <h3>Painel do Criador</h3>
-        <p id="creator-summary"></p>
+        <h2>Pacotes & Liberação Após Pagamento</h2>
+        <p class="hint">
+          Para evitar que alguém ganhe fichas ou VIP de graça sem pagar, libere usando um código de confirmação definido por você após conferir o pagamento.
+        </p>
+
+        <label class="hint" style="display:block;margin-bottom:4px;">Código de Confirmação do Criador (padrão: GO2026)</label>
+        <input class="field" id="secretCodeInput" type="text" placeholder="Ex.: GO2026" />
+
+        <label class="hint" style="display:block;margin-bottom:4px;">Digite o código após confirmar o pagamento</label>
+        <input class="field" id="unlockCodeInput" type="text" placeholder="Digite o código para liberar" />
+
+        <div class="row">
+          <button class="btn gold" id="unlockVipBtn">Liberar VIP (Código)</button>
+          <button class="btn" id="unlockFichasBtn">Liberar +150 Fichas (Código)</button>
+        </div>
       </div>
     </section>
   </main>
 
+  <div class="toast" id="toast"></div>
+
   <script>
-    const state = {
-      size: 9,
-      mode: 'ai',
-      theme: 'kaya',
-      board: [],
-      turn: 1, // 1 = Preto, 2 = Branco
-      captures: { 1: 0, 2: 0 },
-      passes: 0,
-      gameOver: false,
-      points: 1200,
-      wins: 0,
-      coins: 50,
-      vip: false,
-      nick: 'Jogador Go',
-      city: 'São Paulo',
-      pix: ''
-    };
+    // ====== CONFIGURAÇÃO PADRÃO DO CRIADOR ======
+    const DEFAULT_PIX = "e2dd5b9e-de3b-4a07-a14e-76172ed64a3a";
+    const DEFAULT_PAY_LINK = "";
+    const DEFAULT_UNLOCK_CODE = "GO2026";
 
-    const THEMES = {
-      kaya: { bg: '#dcb168', line: '#2b1d0e', star: '#2b1d0e' },
-      walnut: { bg: '#7c5332', line: '#1b1109', star: '#1b1109' },
-      jade: { bg: '#4e7c6c', line: '#11221c', star: '#11221c' }
-    };
+    const STORAGE_KEY = "go_online_state_v1";
+    const state = loadState();
 
-    const canvas = document.getElementById('goban');
-    const ctx = canvas.getContext('2d');
-
-    function initBoard() {
-      state.size = parseInt(document.getElementById('sel-size').value, 10);
-      state.mode = document.getElementById('sel-mode').value;
-      state.theme = document.getElementById('sel-theme').value;
-      state.board = Array.from({ length: state.size }, () => Array(state.size).fill(0));
-      state.turn = 1;
-      state.captures = { 1: 0, 2: 0 };
-      state.passes = 0;
-      state.gameOver = false;
-      updateUI('Sua vez (Preto)');
-      drawBoard();
+    function loadState() {
+      const fallback = {
+        fichas: 50,
+        wins: 0,
+        vip: false,
+        pix: DEFAULT_PIX,
+        payLink: DEFAULT_PAY_LINK,
+        unlockCode: DEFAULT_UNLOCK_CODE
+      };
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const parsed = raw ? { ...fallback, ...JSON.parse(raw) } : fallback;
+        if (!parsed.pix) parsed.pix = DEFAULT_PIX;
+        return parsed;
+      } catch {
+        return fallback;
+      }
     }
 
-    function inBounds(r, c) {
-      return r >= 0 && r < state.size && c >= 0 && c < state.size;
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch {}
+      renderHeader();
+      renderRanking();
+      renderPaymentPanel();
     }
 
-    function neighbors(r, c) {
-      return [[r-1,c],[r+1,c],[r,c-1],[r,c+1]].filter(([nr,nc]) => inBounds(nr,nc));
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
     }
 
-    function getGroup(board, r, c) {
-      const color = board[r][c];
-      if (!color) return { stones: [], liberties: new Set() };
-      const visited = new Set();
-      const stones = [];
-      const liberties = new Set();
-      const stack = [[r, c]];
-      while (stack.length) {
-        const [cr, cc] = stack.pop();
-        const key = cr + ',' + cc;
-        if (visited.has(key)) continue;
-        visited.add(key);
-        stones.push([cr, cc]);
-        for (const [nr, nc] of neighbors(cr, cc)) {
-          if (board[nr][nc] === 0) liberties.add(nr + ',' + nc);
-          else if (board[nr][nc] === color && !visited.has(nr + ',' + nc)) stack.push([nr, nc]);
-        }
-      }
-      return { stones, liberties };
+    // ====== ABAS ======
+    document.querySelectorAll("nav.tabs button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("nav.tabs button").forEach((b) => b.classList.remove("active"));
+        document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.add("active");
+      });
+    });
+
+    function renderHeader() {
+      document.getElementById("fichasCount").textContent = state.fichas;
+      document.getElementById("vipBadge").classList.toggle("active", Boolean(state.vip));
     }
 
-    function tryMove(r, c, color) {
-      if (state.gameOver || !inBounds(r, c) || state.board[r][c] !== 0) return false;
-      const copy = state.board.map(row => [...row]);
-      copy[r][c] = color;
-      const opp = color === 1 ? 2 : 1;
-      let capturedCount = 0;
+    function renderRanking() {
+      const tbody = document.getElementById("rankingBody");
+      const rows = [
+        { name: "Você", wins: state.wins, fichas: state.fichas },
+        { name: "Mestre Kenji", wins: 5, fichas: 210 },
+        { name: "Ana Go", wins: 3, fichas: 140 }
+      ].sort((a, b) => b.wins - a.wins || b.fichas - a.fichas);
 
-      for (const [nr, nc] of neighbors(r, c)) {
-        if (copy[nr][nc] === opp) {
-          const grp = getGroup(copy, nr, nc);
-          if (grp.liberties.size === 0) {
-            for (const [sr, sc] of grp.stones) {
-              copy[sr][sc] = 0;
-              capturedCount++;
-            }
-          }
-        }
+      tbody.innerHTML = rows
+        .map(
+          (r, i) => `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${r.name}</td>
+            <td>${r.wins}</td>
+            <td>${r.fichas}</td>
+          </tr>`
+        )
+        .join("");
+    }
+
+    // ====== LOJA & RECEBIMENTO REAL ======
+    const pixInput = document.getElementById("pixInput");
+    const payLinkInput = document.getElementById("payLinkInput");
+    const secretCodeInput = document.getElementById("secretCodeInput");
+    const unlockCodeInput = document.getElementById("unlockCodeInput");
+
+    function renderPaymentPanel() {
+      pixInput.value = state.pix || DEFAULT_PIX;
+      payLinkInput.value = state.payLink || "";
+      secretCodeInput.value = state.unlockCode || DEFAULT_UNLOCK_CODE;
+      const pixText = state.pix ? `Pix: ${state.pix}` : "Pix não definido";
+      const linkText = state.payLink ? `Link: ${state.payLink}` : "Link não definido";
+      document.getElementById("creatorSummary").textContent = `${pixText} • ${linkText}`;
+    }
+
+    document.getElementById("savePaymentBtn").addEventListener("click", () => {
+      state.pix = pixInput.value.trim() || DEFAULT_PIX;
+      const rawLink = payLinkInput.value.trim();
+      if (rawLink && !/^https?:\/\//i.test(rawLink)) {
+        showToast("Use um link começando com https://");
+        return;
       }
+      state.payLink = rawLink;
+      state.unlockCode = (secretCodeInput.value.trim() || DEFAULT_UNLOCK_CODE);
+      saveState();
+      showToast("Dados de recebimento salvos!");
+    });
 
-      const ownGrp = getGroup(copy, r, c);
-      if (ownGrp.liberties.size === 0 && capturedCount === 0) {
-        return false; // Suicídio não permitido
+    document.getElementById("copyPixBtn").addEventListener("click", async () => {
+      const chave = (pixInput.value.trim() || state.pix || DEFAULT_PIX).trim();
+      if (!chave) {
+        showToast("Cadastre uma chave Pix primeiro.");
+        return;
       }
-
-      state.board = copy;
-      state.captures[color] += capturedCount;
-      state.passes = 0;
-      state.turn = opp;
-      drawBoard();
-      updateUI(capturedCount > 0 ? `Capturou ${capturedCount} pedra(s)!` : 'Jogada registrada');
-
-      if (!state.gameOver && state.mode === 'ai' && state.turn === 2) {
-        setTimeout(aiMove, 220);
+      try {
+        await navigator.clipboard.writeText(chave);
+        showToast("Chave Pix copiada!");
+      } catch {
+        showToast("Selecione e copie a chave Pix no campo acima.");
       }
+    });
+
+    document.getElementById("openPayLinkBtn").addEventListener("click", () => {
+      const url = (payLinkInput.value.trim() || state.payLink || "").trim();
+      if (!/^https?:\/\//i.test(url)) {
+        showToast("Insira um link válido com https://");
+        return;
+      }
+      window.open(url, "_blank", "noopener,noreferrer");
+    });
+
+    function verifyUnlockCode() {
+      const expected = (state.unlockCode || DEFAULT_UNLOCK_CODE).trim().toUpperCase();
+      const typed = unlockCodeInput.value.trim().toUpperCase();
+      if (!typed || typed !== expected) {
+        showToast("Código inválido. Confirme o pagamento primeiro.");
+        return false;
+      }
+      unlockCodeInput.value = "";
       return true;
     }
 
-    function aiMove() {
-      if (state.gameOver || state.turn !== 2) return;
-      const moves = [];
-      for (let r = 0; r < state.size; r++) {
-        for (let c = 0; c < state.size; c++) {
-          if (state.board[r][c] === 0) moves.push([r, c]);
-        }
-      }
-      moves.sort(() => Math.random() - 0.5);
-      for (const [r, c] of moves) {
-        if (tryMove(r, c, 2)) return;
-      }
-      passTurn();
-    }
+    document.getElementById("unlockVipBtn").addEventListener("click", () => {
+      if (!verifyUnlockCode()) return;
+      state.vip = true;
+      saveState();
+      showToast("VIP liberado!");
+    });
 
-    function passTurn() {
-      if (state.gameOver) return;
-      state.passes += 1;
-      if (state.passes >= 2) {
-        finishGame();
-        return;
-      }
-      state.turn = state.turn === 1 ? 2 : 1;
-      updateUI('Vez passada');
-      if (state.mode === 'ai' && state.turn === 2) {
-        setTimeout(aiMove, 200);
-      }
-    }
+    document.getElementById("unlockFichasBtn").addEventListener("click", () => {
+      if (!verifyUnlockCode()) return;
+      state.fichas += 150;
+      saveState();
+      showToast("+150 fichas liberadas!");
+    });
 
-    function finishGame() {
-      state.gameOver = true;
-      const blackScore = state.captures[1] * 2 + 15;
-      const whiteScore = state.captures[2] * 2 + 6.5;
-      const won = blackScore >= whiteScore;
-      if (won) {
-        state.wins += 1;
-        state.points += 25;
-        state.coins += 10;
-      } else {
-        state.points = Math.max(800, state.points - 10);
-      }
-      updateUI(
-        won
-          ? `Vitória do Preto (${blackScore} a ${whiteScore})! +25 pts e +10 fichas`
-          : `Vitória do Branco (${whiteScore} a ${blackScore}). -10 pts`
-      );
-      renderRanks();
+    // ====== TABULEIRO GO 9x9 ======
+    const SIZE = 9;
+    const canvas = document.getElementById("goBoard");
+    const ctx = canvas.getContext("2d");
+    let grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(0));
+    let turn = 1;
+    let passes = 0;
+
+    function resetBoard() {
+      grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(0));
+      turn = 1;
+      passes = 0;
+      document.getElementById("turnInfo").textContent = "Vez das Pretas (Você). Toque em uma interseção.";
+      drawBoard();
     }
 
     function drawBoard() {
-      const t = THEMES[state.theme] || THEMES.kaya;
-      const pad = 36;
-      const step = (canvas.width - pad * 2) / (state.size - 1);
+      const w = canvas.width;
+      const pad = 34;
+      const step = (w - pad * 2) / (SIZE - 1);
 
-      ctx.fillStyle = t.bg;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, w, w);
+      ctx.strokeStyle = "#3b2314";
+      ctx.lineWidth = 1.6;
 
-      ctx.strokeStyle = t.line;
-      ctx.lineWidth = 1.5;
-
-      for (let i = 0; i < state.size; i++) {
+      for (let i = 0; i < SIZE; i++) {
         const pos = pad + i * step;
         ctx.beginPath();
         ctx.moveTo(pad, pos);
-        ctx.lineTo(canvas.width - pad, pos);
+        ctx.lineTo(w - pad, pos);
         ctx.stroke();
 
         ctx.beginPath();
         ctx.moveTo(pos, pad);
-        ctx.lineTo(pos, canvas.height - pad);
+        ctx.lineTo(pos, w - pad);
         ctx.stroke();
       }
 
-      const stars = state.size === 9 ? [2, 4, 6] : state.size === 13 ? [3, 6, 9] : [3, 9, 15];
-      ctx.fillStyle = t.star;
-      for (const r of stars) {
-        for (const c of stars) {
-          if (r < state.size && c < state.size) {
-            ctx.beginPath();
-            ctx.arc(pad + c * step, pad + r * step, 3.5, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        }
+      const stars = [[2, 2], [2, 6], [6, 2], [6, 6], [4, 4]];
+      ctx.fillStyle = "#3b2314";
+      for (const [r, c] of stars) {
+        ctx.beginPath();
+        ctx.arc(pad + c * step, pad + r * step, 3.5, 0, Math.PI * 2);
+        ctx.fill();
       }
 
-      for (let r = 0; r < state.size; r++) {
-        for (let c = 0; c < state.size; c++) {
-          const val = state.board[r][c];
-          if (!val) continue;
-          const x = pad + c * step;
-          const y = pad + r * step;
-          const rad = step * 0.43;
+      for (let r = 0; r < SIZE; r++) {
+        for (let c = 0; c < SIZE; c++) {
+          const stone = grid[r][c];
+          if (!stone) continue;
+          const cx = pad + c * step;
+          const cy = pad + r * step;
+          const radius = step * 0.42;
 
           ctx.beginPath();
-          ctx.arc(x, y, rad, 0, Math.PI * 2);
-          ctx.fillStyle = val === 1 ? '#15171a' : '#f4f6f9';
+          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+          ctx.fillStyle = stone === 1 ? "#111827" : "#f8fafc";
           ctx.fill();
-          ctx.lineWidth = 1.2;
-          ctx.strokeStyle = val === 1 ? '#000' : '#bcc4d0';
+          ctx.lineWidth = 1.4;
+          ctx.strokeStyle = stone === 1 ? "#000000" : "#cbd5e1";
           ctx.stroke();
         }
       }
     }
 
-    canvas.addEventListener('click', (e) => {
-      if (state.gameOver || (state.mode === 'ai' && state.turn !== 1)) return;
+    function getNeighbors(r, c) {
+      return [
+        [r - 1, c],
+        [r + 1, c],
+        [r, c - 1],
+        [r, c + 1]
+      ].filter(([nr, nc]) => nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE);
+    }
+
+    function collectGroupAndLiberties(board, r, c) {
+      const color = board[r][c];
+      const visited = new Set([`${r},${c}`]);
+      const stack = [[r, c]];
+      const group = [];
+      let liberties = 0;
+
+      while (stack.length) {
+        const [cr, cc] = stack.pop();
+        group.push([cr, cc]);
+        for (const [nr, nc] of getNeighbors(cr, cc)) {
+          const key = `${nr},${nc}`;
+          if (board[nr][nc] === 0 && !visited.has(`lib:${key}`)) {
+            visited.add(`lib:${key}`);
+            liberties++;
+          } else if (board[nr][nc] === color && !visited.has(key)) {
+            visited.add(key);
+            stack.push([nr, nc]);
+          }
+        }
+      }
+      return { group, liberties };
+    }
+
+    function tryPlaceStone(r, c, color) {
+      if (grid[r][c] !== 0) return false;
+      const copy = grid.map((row) => [...row]);
+      copy[r][c] = color;
+      const enemy = color === 1 ? 2 : 1;
+      let captured = 0;
+
+      for (const [nr, nc] of getNeighbors(r, c)) {
+        if (copy[nr][nc] === enemy) {
+          const info = collectGroupAndLiberties(copy, nr, nc);
+          if (info.liberties === 0) {
+            for (const [gr, gc] of info.group) {
+              copy[gr][gc] = 0;
+              captured++;
+            }
+          }
+        }
+      }
+
+      const selfInfo = collectGroupAndLiberties(copy, r, c);
+      if (selfInfo.liberties === 0 && captured === 0) {
+        return false;
+      }
+
+      grid = copy;
+      passes = 0;
+      if (color === 1 && captured > 0) {
+        state.fichas += captured * 2;
+        saveState();
+        showToast(`Capturou ${captured} pedra(s)! +${captured * 2} fichas`);
+      }
+      return true;
+    }
+
+    function botMove() {
+      const empty = [];
+      for (let r = 0; r < SIZE; r++) {
+        for (let c = 0; c < SIZE; c++) {
+          if (grid[r][c] === 0) empty.push([r, c]);
+        }
+      }
+      for (let i = empty.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [empty[i], empty[j]] = [empty[j], empty[i]];
+      }
+      for (const [r, c] of empty) {
+        if (tryPlaceStone(r, c, 2)) {
+          turn = 1;
+          document.getElementById("turnInfo").textContent = "Vez das Pretas (Você).";
+          drawBoard();
+          return;
+        }
+      }
+      passes++;
+      turn = 1;
+      finishIfTwoPasses();
+    }
+
+    function finishIfTwoPasses() {
+      if (passes >= 2) {
+        state.wins += 1;
+        state.fichas += 15;
+        saveState();
+        document.getElementById("turnInfo").textContent = "Partida encerrada por passes! +15 fichas e +1 vitória.";
+      } else {
+        document.getElementById("turnInfo").textContent = "Vez das Pretas (Você).";
+      }
+    }
+
+    canvas.addEventListener("click", (ev) => {
+      if (turn !== 1) return;
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
       const scaleY = canvas.height / rect.height;
-      const x = (e.clientX - rect.left) * scaleX;
-      const y = (e.clientY - rect.top) * scaleY;
-      const pad = 36;
-      const step = (canvas.width - pad * 2) / (state.size - 1);
-      const col = Math.round((x - pad) / step);
-      const row = Math.round((y - pad) / step);
-      tryMove(row, col, state.turn);
-    });
+      const x = (ev.clientX - rect.left) * scaleX;
+      const y = (ev.clientY - rect.top) * scaleY;
 
-    function updateUI(msg) {
-      document.getElementById('hud-pts').textContent = state.points;
-      document.getElementById('hud-wins').textContent = state.wins;
-      document.getElementById('hud-cap').textContent = `${state.captures[1]} / ${state.captures[2]}`;
-      document.getElementById('hud-coins').textContent = state.coins;
-      document.getElementById('turn-text').textContent = state.turn === 1 ? 'Preto' : 'Branco';
-      if (msg) document.getElementById('status-text').textContent = msg;
+      const pad = 34;
+      const step = (canvas.width - pad * 2) / (SIZE - 1);
+      const c = Math.round((x - pad) / step);
+      const r = Math.round((y - pad) / step);
 
-      document.getElementById('creator-summary').textContent =
-        `Recebimento: ${state.pix || 'não configurado'} | VIP ativo: ${state.vip ? 'Sim' : 'Não'} | Fichas do jogador: ${state.coins}`;
-    }
-
-    function renderRanks() {
-      document.getElementById('rank-city-label').textContent = state.city || 'Sua Cidade';
-      const cityList = [
-        { name: 'Mestre Sato', pts: 1480 },
-        { name: 'Ana Wei', pts: 1360 },
-        { name: `${state.nick} (Você)`, pts: state.points }
-      ].sort((a, b) => b.pts - a.pts);
-
-      const worldList = [
-        { name: 'Shin Jinseo (Seul)', pts: 1920 },
-        { name: 'Ke Jie (Pequim)', pts: 1880 },
-        { name: 'Rika Hoshino (Tóquio)', pts: 1740 },
-        { name: `${state.nick} — ${state.city}`, pts: state.points }
-      ].sort((a, b) => b.pts - a.pts);
-
-      document.getElementById('city-rank-list').innerHTML = cityList
-        .map((item, idx) => `<div class="rank-item"><span>#${idx + 1} ${item.name}</span><strong>${item.pts} pts</strong></div>`)
-        .join('');
-
-      document.getElementById('world-rank-list').innerHTML = worldList
-        .map((item, idx) => `<div class="rank-item"><span>#${idx + 1} ${item.name}</span><strong>${item.pts} pts</strong></div>`)
-        .join('');
-    }
-
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('view-' + btn.dataset.tab).classList.add('active');
-        renderRanks();
-        updateUI();
-      });
-    });
-
-    document.getElementById('btn-new').addEventListener('click', initBoard);
-    document.getElementById('btn-pass').addEventListener('click', passTurn);
-    document.getElementById('btn-score').addEventListener('click', finishGame);
-    document.getElementById('sel-theme').addEventListener('change', (e) => {
-      state.theme = e.target.value;
-      drawBoard();
-    });
-
-    document.getElementById('btn-save-profile').addEventListener('click', () => {
-      state.nick = document.getElementById('inp-nick').value.trim() || 'Jogador Go';
-      state.city = document.getElementById('inp-city').value.trim() || 'São Paulo';
-      document.getElementById('profile-msg').textContent = 'Perfil salvo no ranking!';
-      renderRanks();
-    });
-
-    document.getElementById('btn-save-pix').addEventListener('click', () => {
-      state.pix = document.getElementById('inp-pix').value.trim();
-      document.getElementById('pix-msg').textContent = state.pix ? 'Chave/link salvo!' : 'Digite uma chave ou link.';
-      updateUI();
-    });
-
-    document.getElementById('btn-buy-vip').addEventListener('click', () => {
-      if (state.coins >= 20) {
-        state.coins -= 20;
-        state.vip = true;
-        updateUI('VIP ativado!');
-      } else {
-        updateUI('Fichas insuficientes.');
+      if (r < 0 || r >= SIZE || c < 0 || c >= SIZE) return;
+      if (!tryPlaceStone(r, c, 1)) {
+        showToast("Jogada inválida.");
+        return;
       }
+
+      drawBoard();
+      turn = 2;
+      document.getElementById("turnInfo").textContent = "Brancas pensando...";
+      setTimeout(botMove, 250);
     });
 
-    document.getElementById('btn-buy-coins').addEventListener('click', () => {
-      state.coins += 150;
-      updateUI('+150 fichas adicionadas!');
+    document.getElementById("passBtn").addEventListener("click", () => {
+      if (turn !== 1) return;
+      passes++;
+      turn = 2;
+      drawBoard();
+      if (passes >= 2) {
+        finishIfTwoPasses();
+        return;
+      }
+      setTimeout(botMove, 200);
     });
 
-    document.getElementById('inp-nick').value = state.nick;
-    document.getElementById('inp-city').value = state.city;
-    initBoard();
-    renderRanks();
+    document.getElementById("resetBtn").addEventListener("click", resetBoard);
+
+    renderHeader();
+    renderRanking();
+    renderPaymentPanel();
+    drawBoard();
   </script>
 </body>
 </html>
