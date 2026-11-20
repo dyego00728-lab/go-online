@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Bicho Virtual — Pocket Pet</title>
+  <title>Pouzinho — Bicho Virtual</title>
   <style>
     :root {
       --bg: #080d18;
@@ -15,6 +15,7 @@
       --gold: #f59e0b;
       --blue: #38bdf8;
       --pink: #f472b6;
+      --purple: #a855f7;
       --border: #273449;
     }
 
@@ -43,7 +44,7 @@
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 20;
     }
 
     .brand {
@@ -51,38 +52,18 @@
       font-size: 1rem;
     }
 
-    .hud-top {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.84rem;
-      font-weight: 800;
-    }
-
     .pill {
       background: var(--card-2);
       border: 1px solid var(--border);
-      padding: 5px 10px;
+      padding: 5px 11px;
       border-radius: 999px;
-    }
-
-    .vip-badge {
-      background: var(--gold);
-      color: #111827;
-      padding: 2px 7px;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      font-weight: 900;
-      display: none;
-    }
-
-    .vip-badge.active {
-      display: inline-block;
+      font-size: 0.86rem;
+      font-weight: 800;
     }
 
     nav.tabs {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       background: var(--card);
       border-bottom: 1px solid var(--border);
     }
@@ -91,9 +72,9 @@
       background: transparent;
       border: none;
       color: var(--muted);
-      padding: 12px 6px;
+      padding: 11px 4px;
       font-weight: 800;
-      font-size: 0.88rem;
+      font-size: 0.82rem;
       border-bottom: 3px solid transparent;
       cursor: pointer;
     }
@@ -107,9 +88,9 @@
     main {
       flex: 1;
       width: 100%;
-      max-width: 560px;
+      max-width: 580px;
       margin: 0 auto;
-      padding: 14px;
+      padding: 12px;
     }
 
     .panel-tab {
@@ -124,53 +105,55 @@
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 14px;
+      padding: 13px;
+      margin-bottom: 12px;
     }
 
-    .pet-header {
+    .pet-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
       gap: 8px;
+      margin-bottom: 10px;
     }
 
-    .pet-title {
-      font-size: 1.05rem;
+    .pet-name {
       font-weight: 900;
+      font-size: 1.02rem;
     }
 
-    .pet-mood {
-      font-size: 0.82rem;
+    .pet-status {
+      font-size: 0.8rem;
       color: #86efac;
       font-weight: 700;
+      text-align: right;
     }
 
     .meters {
       display: grid;
-      gap: 8px;
-      margin-bottom: 12px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-bottom: 10px;
     }
 
-    .meter-row {
+    .meter {
       background: var(--card-2);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 8px 10px;
+      padding: 7px 8px;
     }
 
-    .meter-top {
+    .meter-label {
       display: flex;
       justify-content: space-between;
-      font-size: 0.8rem;
+      font-size: 0.74rem;
       font-weight: 800;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
 
     .bar-bg {
-      height: 8px;
-      background: #0b101b;
+      height: 7px;
+      background: #090e18;
       border-radius: 999px;
       overflow: hidden;
     }
@@ -185,24 +168,54 @@
     .stage-wrap {
       display: flex;
       justify-content: center;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
-    canvas#petStage {
+    canvas#stage {
       width: 100%;
-      max-width: 390px;
+      max-width: 400px;
       aspect-ratio: 4 / 3;
-      background: radial-gradient(circle at top, #17253b, #090e1a 75%);
+      background: radial-gradient(circle at top, #1b2d47, #090e1a 78%);
       border: 1px solid var(--border);
       border-radius: 14px;
       touch-action: manipulation;
-      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.42);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
     }
 
-    .actions-grid {
+    .menu-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 8px;
+    }
+
+    .menu-grid.cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .item-btn {
+      background: var(--card-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 10px 8px;
+      font-weight: 800;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .item-btn small {
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .item-btn:active {
+      transform: scale(0.98);
+      border-color: var(--accent);
     }
 
     .btn {
@@ -210,10 +223,11 @@
       color: #052e16;
       border: none;
       border-radius: 10px;
-      padding: 11px 10px;
+      padding: 11px 12px;
       font-weight: 900;
       font-size: 0.86rem;
       cursor: pointer;
+      width: 100%;
     }
 
     .btn.secondary {
@@ -227,21 +241,15 @@
       color: #111827;
     }
 
-    .row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
     h2 {
       margin: 0 0 6px;
-      font-size: 1.05rem;
+      font-size: 1.04rem;
     }
 
     p.hint {
-      margin: 0 0 12px;
+      margin: 0 0 10px;
       color: var(--muted);
-      font-size: 0.86rem;
+      font-size: 0.84rem;
       line-height: 1.4;
     }
 
@@ -256,27 +264,79 @@
       margin-bottom: 10px;
     }
 
-    .pix-box {
-      background: var(--bg);
-      border: 1px dashed var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 0.84rem;
-      color: #e5e7eb;
-      word-break: break-all;
-      margin-bottom: 10px;
+    .pet-picker {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
     }
 
-    table {
+    .pet-card {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 0.86rem;
+    }
+
+    .pet-card.selected {
+      border-color: var(--accent);
+      background: rgba(34, 197, 94, 0.14);
+      color: #86efac;
+    }
+
+    /* Modal de Trabalho / Brincar */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 7, 18, 0.82);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 40;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
       width: 100%;
-      border-collapse: collapse;
-      font-size: 0.88rem;
+      max-width: 400px;
+      text-align: center;
     }
 
-    th, td {
-      padding: 9px 6px;
-      border-bottom: 1px solid var(--border);
-      text-align: left;
+    .work-arena {
+      position: relative;
+      height: 210px;
+      background: #070c16;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin: 10px 0 12px;
+      overflow: hidden;
+    }
+
+    .target-btn {
+      position: absolute;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      background: var(--gold);
+      color: #111827;
+      font-weight: 900;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .toast {
@@ -294,7 +354,8 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s ease;
-      z-index: 50;
+      z-index: 60;
+      white-space: nowrap;
     }
 
     .toast.show {
@@ -304,164 +365,217 @@
 </head>
 <body>
   <header>
-    <div class="brand">🐾 Bicho Virtual</div>
-    <div class="hud-top">
-      <div class="pill">🪙 <span id="coinsVal">50</span></div>
-      <span id="vipBadge" class="vip-badge">VIP</span>
-    </div>
+    <div class="brand">🐾 Pouzinho</div>
+    <div class="pill">🪙 <span id="coinsEl">60</span></div>
   </header>
 
   <nav class="tabs">
-    <button class="active" data-tab="petTab">Meu Bicho</button>
-    <button data-tab="rankTab">Progresso</button>
-    <button data-tab="pixTab">Pix & VIP</button>
+    <button class="active" data-tab="comerTab">Comer/Beber</button>
+    <button data-tab="fazerTab">Brincar/Job</button>
+    <button data-tab="bichoTab">Bichos</button>
+    <button data-tab="quartoTab">Quarto</button>
   </nav>
 
   <main>
-    <!-- MEU BICHO -->
-    <section id="petTab" class="panel-tab active">
+    <!-- HUD COMUM DO BICHO -->
+    <div class="card">
+      <div class="pet-top">
+        <div class="pet-name" id="petTitleEl">Gatinho • Nv. 1</div>
+        <div class="pet-status" id="petStatusEl">Pronto pra curtir!</div>
+      </div>
+
+      <div class="meters">
+        <div class="meter">
+          <div class="meter-label"><span>🍖 Fome</span><span id="hungerVal">80%</span></div>
+          <div class="bar-bg"><div class="bar-fill" id="hungerBar" style="background:#22c55e;"></div></div>
+        </div>
+        <div class="meter">
+          <div class="meter-label"><span>😄 Humor</span><span id="happyVal">80%</span></div>
+          <div class="bar-bg"><div class="bar-fill" id="happyBar" style="background:#f472b6;"></div></div>
+        </div>
+        <div class="meter">
+          <div class="meter-label"><span>⚡ Energia</span><span id="energyVal">80%</span></div>
+          <div class="bar-bg"><div class="bar-fill" id="energyBar" style="background:#38bdf8;"></div></div>
+        </div>
+      </div>
+
+      <div class="stage-wrap">
+        <canvas id="stage" width="380" height="260"></canvas>
+      </div>
+    </div>
+
+    <!-- ABA 1: COMIDA & BEBIDA -->
+    <section id="comerTab" class="panel-tab active">
       <div class="card">
-        <div class="pet-header">
-          <div class="pet-title" id="petNameDisplay">Mochi • Nv. 1</div>
-          <div class="pet-mood" id="petMoodText">Animado e pronto para brincar!</div>
+        <h2>Comidas</h2>
+        <p class="hint">Enchem a barriga e dão energia.</p>
+        <div class="menu-grid cols-3">
+          <button class="item-btn" onclick="eatItem('Maçã', 4, 15, 5, 4)">
+            🍎 Maçã
+            <small>4 🪙 • +15 Fome</small>
+          </button>
+          <button class="item-btn" onclick="eatItem('Hambúrguer', 9, 32, 8, 8)">
+            🍔 Burger
+            <small>9 🪙 • +32 Fome</small>
+          </button>
+          <button class="item-btn" onclick="eatItem('Bolo Doce', 12, 25, 18, 6)">
+            🎂 Bolo
+            <small>12 🪙 • +18 Humor</small>
+          </button>
         </div>
+      </div>
 
-        <div class="meters">
-          <div class="meter-row">
-            <div class="meter-top"><span>🍖 Alimentação</span><span id="hungerTxt">80%</span></div>
-            <div class="bar-bg"><div class="bar-fill" id="hungerBar" style="background:#22c55e;"></div></div>
-          </div>
-          <div class="meter-row">
-            <div class="meter-top"><span>🎾 Felicidade</span><span id="happyTxt">80%</span></div>
-            <div class="bar-bg"><div class="bar-fill" id="happyBar" style="background:#f472b6;"></div></div>
-          </div>
-          <div class="meter-row">
-            <div class="meter-top"><span>⚡ Energia</span><span id="energyTxt">80%</span></div>
-            <div class="bar-bg"><div class="bar-fill" id="energyBar" style="background:#38bdf8;"></div></div>
-          </div>
-        </div>
-
-        <div class="stage-wrap">
-          <canvas id="petStage" width="380" height="285"></canvas>
-        </div>
-
-        <div class="actions-grid">
-          <button class="btn" id="feedBtn">🍖 Alimentar (-5 🪙)</button>
-          <button class="btn gold" id="playBtn">🎾 Brincar (+8 🪙)</button>
-          <button class="btn secondary" id="sleepBtn">💤 Dormir</button>
+      <div class="card">
+        <h2>Bebidas</h2>
+        <p class="hint">Refrescam, dão energia ou animam o bicho.</p>
+        <div class="menu-grid cols-3">
+          <button class="item-btn" onclick="drinkItem('Água Fresca', 2, 6, 6, 12)">
+            💧 Água
+            <small>2 🪙 • +12 Energia</small>
+          </button>
+          <button class="item-btn" onclick="drinkItem('Suco Tropical', 6, 10, 14, 15)">
+            🧃 Suco
+            <small>6 🪙 • +15 Energia</small>
+          </button>
+          <button class="item-btn" onclick="drinkItem('Energético', 10, 5, 10, 30)">
+            ⚡ Turbo
+            <small>10 🪙 • +30 Energia</small>
+          </button>
         </div>
       </div>
     </section>
 
-    <!-- PROGRESSO -->
-    <section id="rankTab" class="panel-tab">
+    <!-- ABA 2: BRINCAR & TRABALHO -->
+    <section id="fazerTab" class="panel-tab">
       <div class="card">
-        <h2>Nome do Bicho Virtual</h2>
-        <p class="hint">Escolha como chamar o seu bichinho.</p>
-        <input class="field" id="petNameInput" type="text" maxlength="16" placeholder="Ex.: Mochi, Pipoca, Rex" />
-        <button class="btn" id="savePetNameBtn">Salvar Nome</button>
-      </div>
-
-      <div class="card">
-        <h2>Resumo do Bicho</h2>
-        <p class="hint">Nível, cuidados feitos e fichas acumuladas neste aparelho.</p>
-        <table>
-          <thead>
-            <tr>
-              <th>Bicho</th>
-              <th>Nível</th>
-              <th>Cuidados</th>
-              <th>Fichas</th>
-            </tr>
-          </thead>
-          <tbody id="summaryBody"></tbody>
-        </table>
+        <h2>Brincar & Trabalho</h2>
+        <p class="hint">Faça trabalho rápido pra ganhar moedas, brinque pra subir o humor ou bote pra dormir.</p>
+        <div class="menu-grid">
+          <button class="item-btn" onclick="openMiniGame('work')">
+            💼 Trabalhar (Ganhar 🪙)
+            <small>Acerte alvos em 10s</small>
+          </button>
+          <button class="item-btn" onclick="openMiniGame('play')">
+            🎾 Brincar (+Humor)
+            <small>Gasta energia • +XP</small>
+          </button>
+          <button class="item-btn" onclick="petCarinho()">
+            💖 Dar Carinho
+            <small>Grátis • +Humor</small>
+          </button>
+          <button class="item-btn" onclick="toggleSleep()">
+            💤 Dormir / Acordar
+            <small>Recupera energia</small>
+          </button>
+        </div>
       </div>
     </section>
 
-    <!-- PIX & VIP -->
-    <section id="pixTab" class="panel-tab">
+    <!-- ABA 3: ESCOLHER BICHO -->
+    <section id="bichoTab" class="panel-tab">
       <div class="card">
-        <h2>Receber via Pix</h2>
-        <p class="hint">Sua chave Pix para receber pagamentos ou apoios.</p>
-        <div class="pix-box" id="pixText"></div>
-        <input class="field" id="pixEdit" type="text" placeholder="Chave Pix" />
-        <div class="row">
-          <button class="btn" id="copyPixBtn">Copiar Pix</button>
-          <button class="btn secondary" id="savePixBtn">Salvar Chave</button>
-        </div>
+        <h2>Escolha seu Bicho</h2>
+        <p class="hint">Troque o visual do seu bicho quando quiser.</p>
+        <div class="pet-picker" id="petPicker"></div>
+      </div>
+    </section>
+
+    <!-- ABA 4: QUARTO / NOME -->
+    <section id="quartoTab" class="panel-tab">
+      <div class="card">
+        <h2>Nome do Bicho</h2>
+        <p class="hint">Dê um apelido para o seu bichinho.</p>
+        <input class="field" id="customNameInput" type="text" maxlength="16" placeholder="Ex.: Mingau, Pipoca, Thor" />
+        <button class="btn" id="saveNameBtn">Salvar Nome</button>
       </div>
 
       <div class="card">
-        <h2>Liberar VIP ou Fichas</h2>
-        <p class="hint">Após confirmar o pagamento, digite o código de liberação (padrão: <strong>GO2026</strong>). Com VIP, brincar rende o dobro de fichas!</p>
-        <input class="field" id="unlockInput" type="text" placeholder="Digite GO2026" />
-        <div class="row">
-          <button class="btn gold" id="vipBtn">Liberar VIP</button>
-          <button class="btn" id="coinsBtn">+150 Fichas</button>
-        </div>
+        <h2>Estatísticas</h2>
+        <p class="hint" id="statsText">XP: 0 • Trabalhos concluídos: 0</p>
+        <button class="btn secondary" id="resetSaveBtn">Resetar Progresso</button>
       </div>
     </section>
   </main>
 
+  <!-- MODAL DO MINIJOGO (TRABALHO / BRINCAR) -->
+  <div class="modal-backdrop" id="gameModal">
+    <div class="modal-box">
+      <h2 id="modalTitle">Trabalhando!</h2>
+      <p class="hint" id="modalSub">Toque nos alvos antes do tempo acabar!</p>
+      <div style="display:flex;justify-content:space-between;font-weight:800;font-size:0.86rem;">
+        <span>Tempo: <span id="timerEl">10</span>s</span>
+        <span>Acertos: <span id="hitsEl">0</span></span>
+      </div>
+      <div class="work-arena" id="workArena"></div>
+      <button class="btn secondary" id="closeModalBtn">Fechar</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script>
-    const PIX_DEFAULT = "e2dd5b9e-de3b-4a07-a14e-76172ed64a3a";
-    const CODE_DEFAULT = "GO2026";
-    const STORAGE_KEY = "bicho_virtual_save_v1";
+    const SPECIES = [
+      { id: "cat", label: "🐱 Gatinho", body: "#f59e0b", ear: "#d97706" },
+      { id: "dog", label: "🐶 Cachorrinho", body: "#d97706", ear: "#78350f" },
+      { id: "bunny", label: "🐰 Coelhinho", body: "#f472b6", ear: "#ec4899" },
+      { id: "alien", label: "👾 Alienzinho", body: "#22c55e", ear: "#16a34a" }
+    ];
 
-    const petState = loadPet();
-    let hopOffset = 0;
-    let hopVel = 0;
-    let blinkTimer = 0;
-    let breathTick = 0;
+    const SAVE_KEY = "pouzinho_save_v1";
+    const state = loadState();
+
     let sleeping = false;
-    let hearts = [];
+    let hopY = 0;
+    let hopVel = 0;
+    let breath = 0;
+    let blink = 0;
+    let popups = [];
+
+    // Estado do minijogo
+    let modalMode = null;
+    let gameTimerId = null;
+    let moveTargetId = null;
+    let timeLeft = 10;
+    let hits = 0;
 
     function clamp(v, min, max) {
       return Math.max(min, Math.min(max, v));
     }
 
-    function loadPet() {
+    function loadState() {
       const def = {
-        petName: "Mochi",
-        coins: 50,
+        species: "cat",
+        customName: "",
+        coins: 60,
         xp: 0,
-        actionsCount: 0,
+        jobsDone: 0,
         hunger: 80,
         happy: 80,
-        energy: 80,
-        vip: false,
-        pix: PIX_DEFAULT
+        energy: 80
       };
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = localStorage.getItem(SAVE_KEY);
         return raw ? { ...def, ...JSON.parse(raw) } : def;
       } catch {
         return def;
       }
     }
 
-    function savePet() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(petState));
-      } catch {}
-      renderAll();
+    function save() {
+      try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch {}
+      renderUI();
     }
 
     function toast(msg) {
-      const t = document.getElementById("toast");
-      t.textContent = msg;
-      t.classList.add("show");
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(window.__toast);
+      window.__toast = setTimeout(() => el.classList.remove("show"), 2200);
     }
 
-    function escapeHtml(str) {
-      return String(str).replace(/[&<>"']/g, (m) => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-      }[m]));
+    function addPopup(txt, color = "#fde047") {
+      popups.push({ txt, color, x: 190, y: 95, alpha: 1 });
     }
 
     // Abas
@@ -474,295 +588,14 @@
       });
     });
 
+    function getSpec() {
+      return SPECIES.find((s) => s.id === state.species) || SPECIES[0];
+    }
+
     function getLevel() {
-      return 1 + Math.floor(petState.xp / 50);
+      return 1 + Math.floor(state.xp / 50);
     }
 
-    function getMoodLabel() {
-      if (sleeping) return "Dormindo... recarregando energia 💤";
-      if (petState.hunger < 25) return "Com muita fome! 🍖";
-      if (petState.energy < 25) return "Cansado, hora de descansar ⚡";
-      if (petState.happy >= 75) return "Super feliz e animado! ✨";
-      return "De boa, toque para dar carinho!";
-    }
-
-    function spawnHeart(x, y) {
-      hearts.push({ x, y, alpha: 1, vy: -1.1 });
-    }
-
-    function renderAll() {
-      const lv = getLevel();
-      document.getElementById("coinsVal").textContent = petState.coins;
-      document.getElementById("vipBadge").classList.toggle("active", Boolean(petState.vip));
-      document.getElementById("petNameDisplay").textContent = `${petState.petName} • Nv. ${lv}`;
-      document.getElementById("petMoodText").textContent = getMoodLabel();
-
-      const h = Math.round(petState.hunger);
-      const hp = Math.round(petState.happy);
-      const en = Math.round(petState.energy);
-
-      document.getElementById("hungerTxt").textContent = h + "%";
-      document.getElementById("happyTxt").textContent = hp + "%";
-      document.getElementById("energyTxt").textContent = en + "%";
-
-      document.getElementById("hungerBar").style.width = h + "%";
-      document.getElementById("happyBar").style.width = hp + "%";
-      document.getElementById("energyBar").style.width = en + "%";
-
-      document.getElementById("petNameInput").value = petState.petName;
-      document.getElementById("pixEdit").value = petState.pix;
-      document.getElementById("pixText").textContent = "Chave Pix: " + petState.pix;
-
-      document.getElementById("summaryBody").innerHTML = `
-        <tr>
-          <td>${escapeHtml(petState.petName)}</td>
-          <td>Nv. ${lv}</td>
-          <td>${petState.actionsCount}</td>
-          <td>${petState.coins}</td>
-        </tr>`;
-    }
-
-    // Ações do Bicho Virtual
-    document.getElementById("feedBtn").addEventListener("click", () => {
-      if (petState.coins < 5) {
-        toast("Sem fichas suficientes! Brinque para ganhar.");
-        return;
-      }
-      sleeping = false;
-      petState.coins -= 5;
-      petState.hunger = clamp(petState.hunger + 25, 0, 100);
-      petState.happy = clamp(petState.happy + 5, 0, 100);
-      petState.xp += 10;
-      petState.actionsCount += 1;
-      hopVel = -7;
-      spawnHeart(190, 110);
-      savePet();
-      toast(`${petState.petName} comeu e adorou! 🍖`);
-    });
-
-    document.getElementById("playBtn").addEventListener("click", () => {
-      if (petState.energy < 15) {
-        toast(`${petState.petName} está sem energia! Coloque para dormir.`);
-        return;
-      }
-      sleeping = false;
-      const reward = petState.vip ? 16 : 8;
-      petState.coins += reward;
-      petState.happy = clamp(petState.happy + 22, 0, 100);
-      petState.energy = clamp(petState.energy - 18, 0, 100);
-      petState.hunger = clamp(petState.hunger - 10, 0, 100);
-      petState.xp += 15;
-      petState.actionsCount += 1;
-      hopVel = -10;
-      spawnHeart(190, 100);
-      savePet();
-      toast(`Brincou muito! +${reward} fichas 🎾`);
-    });
-
-    document.getElementById("sleepBtn").addEventListener("click", () => {
-      sleeping = !sleeping;
-      if (sleeping) {
-        petState.energy = clamp(petState.energy + 30, 0, 100);
-        petState.xp += 8;
-        petState.actionsCount += 1;
-        savePet();
-        toast(`${petState.petName} foi dormir 💤`);
-      } else {
-        renderAll();
-        toast(`${petState.petName} acordou!`);
-      }
-    });
-
-    // Degradação suave com o tempo
-    setInterval(() => {
-      if (sleeping) {
-        petState.energy = clamp(petState.energy + 3, 0, 100);
-        petState.happy = clamp(petState.happy + 1, 0, 100);
-      } else {
-        petState.hunger = clamp(petState.hunger - 2, 0, 100);
-        petState.happy = clamp(petState.happy - 2, 0, 100);
-        petState.energy = clamp(petState.energy - 1.5, 0, 100);
-      }
-      savePet();
-    }, 6000);
-
-    // Palco animado do Bicho Virtual
-    const stage = document.getElementById("petStage");
-    const sctx = stage.getContext("2d");
-
-    stage.addEventListener("click", () => {
-      sleeping = false;
-      hopVel = -8;
-      petState.happy = clamp(petState.happy + 4, 0, 100);
-      petState.xp += 3;
-      spawnHeart(stage.width / 2, stage.height / 2 - 35);
-      savePet();
-    });
-
-    function drawPet() {
-      sctx.clearRect(0, 0, stage.width, stage.height);
-
-      // Chão
-      sctx.fillStyle = "rgba(15, 23, 42, 0.7)";
-      sctx.beginPath();
-      sctx.ellipse(stage.width / 2, stage.height - 34, 115, 18, 0, 0, Math.PI * 2);
-      sctx.fill();
-
-      // Respiração suave + pulo
-      breathTick += 0.06;
-      const breathOffset = sleeping ? Math.sin(breathTick * 0.7) * 2.5 : Math.sin(breathTick) * 3.5;
-
-      hopOffset += hopVel;
-      hopVel += 0.55;
-      if (hopOffset >= 0) {
-        hopOffset = 0;
-        hopVel = 0;
-      }
-
-      const cx = stage.width / 2;
-      const cy = stage.height / 2 + 12 + hopOffset + breathOffset;
-
-      // Orelhas
-      sctx.fillStyle = petState.vip ? "#38bdf8" : "#f472b6";
-      sctx.beginPath();
-      sctx.ellipse(cx - 42, cy - 52, 16, 30, -0.35, 0, Math.PI * 2);
-      sctx.ellipse(cx + 42, cy - 52, 16, 30, 0.35, 0, Math.PI * 2);
-      sctx.fill();
-
-      // Corpo / Cabeça
-      sctx.fillStyle = petState.vip ? "#7dd3fc" : "#fbcfe8";
-      sctx.beginPath();
-      sctx.arc(cx, cy, 58, 0, Math.PI * 2);
-      sctx.fill();
-      sctx.lineWidth = 3;
-      sctx.strokeStyle = "#ffffff";
-      sctx.stroke();
-
-      // Bochechas
-      sctx.fillStyle = "rgba(244, 63, 94, 0.35)";
-      sctx.beginPath();
-      sctx.arc(cx - 28, cy + 8, 9, 0, Math.PI * 2);
-      sctx.arc(cx + 28, cy + 8, 9, 0, Math.PI * 2);
-      sctx.fill();
-
-      // Olhos
-      blinkTimer++;
-      const isBlinking = sleeping || (blinkTimer % 150 > 142);
-      sctx.strokeStyle = "#0f172a";
-      sctx.fillStyle = "#0f172a";
-      sctx.lineWidth = 3;
-
-      if (isBlinking) {
-        sctx.beginPath();
-        sctx.moveTo(cx - 26, cy - 6);
-        sctx.lineTo(cx - 12, cy - 6);
-        sctx.moveTo(cx + 12, cy - 6);
-        sctx.lineTo(cx + 26, cy - 6);
-        sctx.stroke();
-      } else {
-        sctx.beginPath();
-        sctx.arc(cx - 19, cy - 8, 6.5, 0, Math.PI * 2);
-        sctx.arc(cx + 19, cy - 8, 6.5, 0, Math.PI * 2);
-        sctx.fill();
-
-        sctx.fillStyle = "#ffffff";
-        sctx.beginPath();
-        sctx.arc(cx - 21, cy - 10, 2.2, 0, Math.PI * 2);
-        sctx.arc(cx + 17, cy - 10, 2.2, 0, Math.PI * 2);
-        sctx.fill();
-      }
-
-      // Boca
-      sctx.strokeStyle = "#0f172a";
-      sctx.lineWidth = 2.8;
-      sctx.beginPath();
-      if (petState.happy >= 40 && !sleeping) {
-        sctx.arc(cx, cy + 6, 12, 0.15 * Math.PI, 0.85 * Math.PI);
-      } else {
-        sctx.moveTo(cx - 8, cy + 12);
-        sctx.lineTo(cx + 8, cy + 12);
-      }
-      sctx.stroke();
-
-      // Corações ao tocar / cuidar
-      for (let i = hearts.length - 1; i >= 0; i--) {
-        const h = hearts[i];
-        h.y += h.vy;
-        h.alpha -= 0.022;
-        if (h.alpha <= 0) {
-          hearts.splice(i, 1);
-          continue;
-        }
-        sctx.save();
-        sctx.globalAlpha = Math.max(0, h.alpha);
-        sctx.fillStyle = "#f472b6";
-        sctx.font = "800 18px system-ui, sans-serif";
-        sctx.textAlign = "center";
-        sctx.fillText("♥", h.x, h.y);
-        sctx.restore();
-      }
-
-      // Zzz quando dormindo
-      if (sleeping) {
-        sctx.fillStyle = "#bae6fd";
-        sctx.font = "800 16px system-ui, sans-serif";
-        sctx.fillText("Zzz...", cx + 48, cy - 42);
-      }
-    }
-
-    function animate() {
-      drawPet();
-      requestAnimationFrame(animate);
-    }
-
-    // Nome, Progresso & Pix
-    document.getElementById("savePetNameBtn").addEventListener("click", () => {
-      petState.petName = document.getElementById("petNameInput").value.trim() || "Mochi";
-      savePet();
-      toast("Nome salvo!");
-    });
-
-    document.getElementById("savePixBtn").addEventListener("click", () => {
-      petState.pix = document.getElementById("pixEdit").value.trim() || PIX_DEFAULT;
-      savePet();
-      toast("Chave Pix salva!");
-    });
-
-    document.getElementById("copyPixBtn").addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(petState.pix);
-        toast("Chave Pix copiada!");
-      } catch {
-        toast("Copie a chave no campo acima.");
-      }
-    });
-
-    function verifyCode() {
-      const code = document.getElementById("unlockInput").value.trim().toUpperCase();
-      if (code !== CODE_DEFAULT) {
-        toast("Código inválido");
-        return false;
-      }
-      document.getElementById("unlockInput").value = "";
-      return true;
-    }
-
-    document.getElementById("vipBtn").addEventListener("click", () => {
-      if (!verifyCode()) return;
-      petState.vip = true;
-      savePet();
-      toast("VIP ativado! Brincar rende o dobro.");
-    });
-
-    document.getElementById("coinsBtn").addEventListener("click", () => {
-      if (!verifyCode()) return;
-      petState.coins += 150;
-      savePet();
-      toast("+150 fichas adicionadas!");
-    });
-
-    renderAll();
-    animate();
-  </script>
-</body>
-</html>
+    function renderUI() {
+      const spec = getSpec();
+      const displayName = state.customName.
