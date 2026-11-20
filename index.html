@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#121417" />
+  <title>Go Online — Weiqi / Baduk</title>
+  <style>
+    :root {
+      --bg: #121417;
+      --panel: #1b1f24;
+      --panel-2: #232830;
+      --text: #f3f5f8;
+      --muted: #9aa3b2;
+      --accent: #e5a93c;
+      --accent-2: #2ea043;
+      --border: rgba(255,255,255,0.09);
+      --board: #dcb168;
+      --line: #2b1d0e;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      gap: 8px;
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.3px;
+    }
+
+    .brand span {
+      color: var(--accent);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+    }
+
+    .tab-btn {
+      background: var(--panel-2);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #111;
+      border-color: var(--accent);
+    }
+
+    main {
+      flex: 1;
+      padding: 12px;
+      max-width: 680px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .stat .label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      display: block;
+    }
+
+    .stat .val {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-top: 2px;
+      display: block;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: var(--panel);
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    select, button, input {
+      font-family: inherit;
+      font-size: 0.88rem;
+      border-radius: 8px;
+    }
+
+    select, input {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+    }
+
+    .btn {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: #111;
+      border: none;
+    }
+
+    .btn.success {
+      background: var(--accent-2);
+      color: #fff;
+      border: none;
+    }
+
+    .board-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      background: var(--panel);
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .turn-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .turn-bar strong {
+      color: var(--text);
+    }
+
+    canvas {
+      width: 100%;
+      max-width: 440px;
+      aspect-ratio: 1 / 1;
+      border-radius: 10px;
+      touch-action: manipulation;
+      display: block;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.4;
+    }
+
+    .rank-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .rank-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--panel-2);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+    }
+
+    .badge {
+      background: rgba(229,169,60,0.16);
+      color: var(--accent);
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .msg {
+      font-size: 0.84rem;
+      color: var(--accent);
+      min-height: 18px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">GO <span>ONLINE</span></div>
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="game">Tabuleiro</button>
+      <button class="tab-btn" data-tab="rank">Ranking</button>
+      <button class="tab-btn" data-tab="monetize">Loja &amp; Ganhar</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="view-game" class="view active">
+      <div class="hud">
+        <div class="stat"><span class="label">Pontos</span><span class="val" id="hud-pts">1200</span></div>
+        <div class="stat"><span class="label">Vitórias</span><span class="val" id="hud-wins">0</span></div>
+        <div class="stat"><span class="label">Capturas P/B</span><span class="val" id="hud-cap">0 / 0</span></div>
+        <div class="stat"><span class="label">Fichas</span><span class="val" id="hud-coins">50</span></div>
+      </div>
+
+      <div class="controls">
+        <select id="sel-size">
+          <option value="9">9×9 Rápido</option>
+          <option value="13">13×13 Médio</option>
+          <option value="19">19×19 Clássico</option>
+        </select>
+        <select id="sel-mode">
+          <option value="ai">vs IA</option>
+          <option value="pvp">2 Jogadores (Local)</option>
+        </select>
+        <select id="sel-theme">
+          <option value="kaya">Madeira Kaya</option>
+          <option value="walnut">Nogueira Escura</option>
+          <option value="jade">Jade &amp; Pedra</option>
+        </select>
+        <button class="btn primary" id="btn-new">Nova Partida</button>
+        <button class="btn" id="btn-pass">Passar Vez</button>
+        <button class="btn" id="btn-score">Encerrar e Pontuar</button>
+      </div>
+
+      <div class="board-wrap">
+        <div class="turn-bar">
+          <span>Vez: <strong id="turn-text">Preto (Você)</strong></span>
+          <span id="status-text">Toque em uma interseção</span>
+        </div>
+        <canvas id="goban" width="600" height="600"></canvas>
+      </div>
+    </section>
+
+    <section id="view-rank" class="view">
+      <div class="card">
+        <h3>Seu Perfil de Ranking</h3>
+        <div class="row">
+          <input id="inp-nick" placeholder="Seu apelido" maxlength="18" />
+          <input id="inp-city" placeholder="Sua cidade" maxlength="24" />
+          <button class="btn primary" id="btn-save-profile">Salvar</button>
+        </div>
+        <div class="msg" id="profile-msg"></div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="justify-content: space-between;">
+          <h3>Ranking da Cidade (<span id="rank-city-label">Sua Cidade</span>)</h3>
+          <span class="badge">Local + Jogador</span>
+        </div>
+        <div class="rank-list" id="city-rank-list"></div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="justify-content: space-between;">
+          <h3>Ranking Mundial</h3>
+          <span class="badge">Global</span>
+        </div>
+        <div class="rank-list" id="world-rank-list"></div>
+      </div>
+    </section>
+
+    <section id="view-monetize" class="view">
+      <div class="card">
+        <h3>Como Ganhar com o Jogo</h3>
+        <p>
+          Configure sua chave de recebimento (ex.: Pix/pagamento), venda itens cosméticos ou passe sem anúncios
+          e acompanhe seu saldo de demonstração ou real.
+        </p>
+        <div class="row">
+          <input id="inp-pix" placeholder="Sua chave Pix ou link de apoio" style="flex:1; min-width:180px;" />
+          <button class="btn success" id="btn-save-pix">Salvar Recebimento</button>
+        </div>
+        <div class="msg" id="pix-msg"></div>
+      </div>
+
+      <div class="card">
+        <h3>Loja &amp; Pacotes</h3>
+        <div class="rank-item">
+          <div>
+            <strong>Passe Sem Anúncios (VIP)</strong><br />
+            <small style="color:var(--muted)">Remove banners entre partidas e libera +100 fichas</small>
+          </div>
+          <button class="btn primary" id="btn-buy-vip">Ativar (20 fichas)</button>
+        </div>
+        <div class="rank-item">
+          <div>
+            <strong>Pacote de Fichas (+150)</strong><br />
+            <small style="color:var(--muted)">Use para desbloquear itens e testes de loja</small>
+          </div>
+          <button class="btn" id="btn-buy-coins">Resgatar +150</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Painel do Criador</h3>
+        <p id="creator-summary"></p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const state = {
+      size: 9,
+      mode: 'ai',
+      theme: 'kaya',
+      board: [],
+      turn: 1, // 1 = Preto, 2 = Branco
+      captures: { 1: 0, 2: 0 },
+      passes: 0,
+      gameOver: false,
+      points: 1200,
+      wins: 0,
+      coins: 50,
+      vip: false,
+      nick: 'Jogador Go',
+      city: 'São Paulo',
+      pix: ''
+    };
+
+    const THEMES = {
+      kaya: { bg: '#dcb168', line: '#2b1d0e', star: '#2b1d0e' },
+      walnut: { bg: '#7c5332', line: '#1b1109', star: '#1b1109' },
+      jade: { bg: '#4e7c6c', line: '#11221c', star: '#11221c' }
+    };
+
+    const canvas = document.getElementById('goban');
+    const ctx = canvas.getContext('2d');
+
+    function initBoard() {
+      state.size = parseInt(document.getElementById('sel-size').value, 10);
+      state.mode = document.getElementById('sel-mode').value;
+      state.theme = document.getElementById('sel-theme').value;
+      state.board = Array.from({ length: state.size }, () => Array(state.size).fill(0));
+      state.turn = 1;
+      state.captures = { 1: 0, 2: 0 };
+      state.passes = 0;
+      state.gameOver = false;
+      updateUI('Sua vez (Preto)');
+      drawBoard();
+    }
+
+    function inBounds(r, c) {
+      return r >= 0 && r < state.size && c >= 0 && c < state.size;
+    }
+
+    function neighbors(r, c) {
+      return [[r-1,c],[r+1,c],[r,c-1],[r,c+1]].filter(([nr,nc]) => inBounds(nr,nc));
+    }
+
+    function getGroup(board, r, c) {
+      const color = board[r][c];
+      if (!color) return { stones: [], liberties: new Set() };
+      const visited = new Set();
+      const stones = [];
+      const liberties = new Set();
+      const stack = [[r, c]];
+      while (stack.length) {
+        const [cr, cc] = stack.pop();
+        const key = cr + ',' + cc;
+        if (visited.has(key)) continue;
+        visited.add(key);
+        stones.push([cr, cc]);
+        for (const [nr, nc] of neighbors(cr, cc)) {
+          if (board[nr][nc] === 0) liberties.add(nr + ',' + nc);
+          else if (board[nr][nc] === color && !visited.has(nr + ',' + nc)) stack.push([nr, nc]);
+        }
+      }
+      return { stones, liberties };
+    }
+
+    function tryMove(r, c, color) {
+      if (state.gameOver || !inBounds(r, c) || state.board[r][c] !== 0) return false;
+      const copy = state.board.map(row => [...row]);
+      copy[r][c] = color;
+      const opp = color === 1 ? 2 : 1;
+      let capturedCount = 0;
+
+      for (const [nr, nc] of neighbors(r, c)) {
+        if (copy[nr][nc] === opp) {
+          const grp = getGroup(copy, nr, nc);
+          if (grp.liberties.size === 0) {
+            for (const [sr, sc] of grp.stones) {
+              copy[sr][sc] = 0;
+              capturedCount++;
+            }
+          }
+        }
+      }
+
+      const ownGrp = getGroup(copy, r, c);
+      if (ownGrp.liberties.size === 0 && capturedCount === 0) {
+        return false; // Suicídio não permitido
+      }
+
+      state.board = copy;
+      state.captures[color] += capturedCount;
+      state.passes = 0;
+      state.turn = opp;
+      drawBoard();
+      updateUI(capturedCount > 0 ? `Capturou ${capturedCount} pedra(s)!` : 'Jogada registrada');
+
+      if (!state.gameOver && state.mode === 'ai' && state.turn === 2) {
+        setTimeout(aiMove, 220);
+      }
+      return true;
+    }
+
+    function aiMove() {
+      if (state.gameOver || state.turn !== 2) return;
+      const moves = [];
+      for (let r = 0; r < state.size; r++) {
+        for (let c = 0; c < state.size; c++) {
+          if (state.board[r][c] === 0) moves.push([r, c]);
+        }
+      }
+      moves.sort(() => Math.random() - 0.5);
+      for (const [r, c] of moves) {
+        if (tryMove(r, c, 2)) return;
+      }
+      passTurn();
+    }
+
+    function passTurn() {
+      if (state.gameOver) return;
+      state.passes += 1;
+      if (state.passes >= 2) {
+        finishGame();
+        return;
+      }
+      state.turn = state.turn === 1 ? 2 : 1;
+      updateUI('Vez passada');
+      if (state.mode === 'ai' && state.turn === 2) {
+        setTimeout(aiMove, 200);
+      }
+    }
+
+    function finishGame() {
+      state.gameOver = true;
+      const blackScore = state.captures[1] * 2 + 15;
+      const whiteScore = state.captures[2] * 2 + 6.5;
+      const won = blackScore >= whiteScore;
+      if (won) {
+        state.wins += 1;
+        state.points += 25;
+        state.coins += 10;
+      } else {
+        state.points = Math.max(800, state.points - 10);
+      }
+      updateUI(
+        won
+          ? `Vitória do Preto (${blackScore} a ${whiteScore})! +25 pts e +10 fichas`
+          : `Vitória do Branco (${whiteScore} a ${blackScore}). -10 pts`
+      );
+      renderRanks();
+    }
+
+    function drawBoard() {
+      const t = THEMES[state.theme] || THEMES.kaya;
+      const pad = 36;
+      const step = (canvas.width - pad * 2) / (state.size - 1);
+
+      ctx.fillStyle = t.bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = t.line;
+      ctx.lineWidth = 1.5;
+
+      for (let i = 0; i < state.size; i++) {
+        const pos = pad + i * step;
+        ctx.beginPath();
+        ctx.moveTo(pad, pos);
+        ctx.lineTo(canvas.width - pad, pos);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(pos, pad);
+        ctx.lineTo(pos, canvas.height - pad);
+        ctx.stroke();
+      }
+
+      const stars = state.size === 9 ? [2, 4, 6] : state.size === 13 ? [3, 6, 9] : [3, 9, 15];
+      ctx.fillStyle = t.star;
+      for (const r of stars) {
+        for (const c of stars) {
+          if (r < state.size && c < state.size) {
+            ctx.beginPath();
+            ctx.arc(pad + c * step, pad + r * step, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+
+      for (let r = 0; r < state.size; r++) {
+        for (let c = 0; c < state.size; c++) {
+          const val = state.board[r][c];
+          if (!val) continue;
+          const x = pad + c * step;
+          const y = pad + r * step;
+          const rad = step * 0.43;
+
+          ctx.beginPath();
+          ctx.arc(x, y, rad, 0, Math.PI * 2);
+          ctx.fillStyle = val === 1 ? '#15171a' : '#f4f6f9';
+          ctx.fill();
+          ctx.lineWidth = 1.2;
+          ctx.strokeStyle = val === 1 ? '#000' : '#bcc4d0';
+          ctx.stroke();
+        }
+      }
+    }
+
+    canvas.addEventListener('click', (e) => {
+      if (state.gameOver || (state.mode === 'ai' && state.turn !== 1)) return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      const pad = 36;
+      const step = (canvas.width - pad * 2) / (state.size - 1);
+      const col = Math.round((x - pad) / step);
+      const row = Math.round((y - pad) / step);
+      tryMove(row, col, state.turn);
+    });
+
+    function updateUI(msg) {
+      document.getElementById('hud-pts').textContent = state.points;
+      document.getElementById('hud-wins').textContent = state.wins;
+      document.getElementById('hud-cap').textContent = `${state.captures[1]} / ${state.captures[2]}`;
+      document.getElementById('hud-coins').textContent = state.coins;
+      document.getElementById('turn-text').textContent = state.turn === 1 ? 'Preto' : 'Branco';
+      if (msg) document.getElementById('status-text').textContent = msg;
+
+      document.getElementById('creator-summary').textContent =
+        `Recebimento: ${state.pix || 'não configurado'} | VIP ativo: ${state.vip ? 'Sim' : 'Não'} | Fichas do jogador: ${state.coins}`;
+    }
+
+    function renderRanks() {
+      document.getElementById('rank-city-label').textContent = state.city || 'Sua Cidade';
+      const cityList = [
+        { name: 'Mestre Sato', pts: 1480 },
+        { name: 'Ana Wei', pts: 1360 },
+        { name: `${state.nick} (Você)`, pts: state.points }
+      ].sort((a, b) => b.pts - a.pts);
+
+      const worldList = [
+        { name: 'Shin Jinseo (Seul)', pts: 1920 },
+        { name: 'Ke Jie (Pequim)', pts: 1880 },
+        { name: 'Rika Hoshino (Tóquio)', pts: 1740 },
+        { name: `${state.nick} — ${state.city}`, pts: state.points }
+      ].sort((a, b) => b.pts - a.pts);
+
+      document.getElementById('city-rank-list').innerHTML = cityList
+        .map((item, idx) => `<div class="rank-item"><span>#${idx + 1} ${item.name}</span><strong>${item.pts} pts</strong></div>`)
+        .join('');
+
+      document.getElementById('world-rank-list').innerHTML = worldList
+        .map((item, idx) => `<div class="rank-item"><span>#${idx + 1} ${item.name}</span><strong>${item.pts} pts</strong></div>`)
+        .join('');
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('view-' + btn.dataset.tab).classList.add('active');
+        renderRanks();
+        updateUI();
+      });
+    });
+
+    document.getElementById('btn-new').addEventListener('click', initBoard);
+    document.getElementById('btn-pass').addEventListener('click', passTurn);
+    document.getElementById('btn-score').addEventListener('click', finishGame);
+    document.getElementById('sel-theme').addEventListener('change', (e) => {
+      state.theme = e.target.value;
+      drawBoard();
+    });
+
+    document.getElementById('btn-save-profile').addEventListener('click', () => {
+      state.nick = document.getElementById('inp-nick').value.trim() || 'Jogador Go';
+      state.city = document.getElementById('inp-city').value.trim() || 'São Paulo';
+      document.getElementById('profile-msg').textContent = 'Perfil salvo no ranking!';
+      renderRanks();
+    });
+
+    document.getElementById('btn-save-pix').addEventListener('click', () => {
+      state.pix = document.getElementById('inp-pix').value.trim();
+      document.getElementById('pix-msg').textContent = state.pix ? 'Chave/link salvo!' : 'Digite uma chave ou link.';
+      updateUI();
+    });
+
+    document.getElementById('btn-buy-vip').addEventListener('click', () => {
+      if (state.coins >= 20) {
+        state.coins -= 20;
+        state.vip = true;
+        updateUI('VIP ativado!');
+      } else {
+        updateUI('Fichas insuficientes.');
+      }
+    });
+
+    document.getElementById('btn-buy-coins').addEventListener('click', () => {
+      state.coins += 150;
+      updateUI('+150 fichas adicionadas!');
+    });
+
+    document.getElementById('inp-nick').value = state.nick;
+    document.getElementById('inp-city').value = state.city;
+    initBoard();
+    renderRanks();
+  </script>
+</body>
+</html>
