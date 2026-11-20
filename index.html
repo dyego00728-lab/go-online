@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Go Online — Tabuleiro & Loja</title>
+  <title>Go Online — Tabuleiro, Ranking & Loja</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -12,11 +12,9 @@
       --text: #f8fafc;
       --muted: #94a3b8;
       --accent: #22c55e;
-      --accent-2: #16a34a;
       --gold: #f59e0b;
       --border: #334155;
       --board: #d9a05b;
-      --line: #3b2314;
     }
 
     * {
@@ -41,7 +39,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
       position: sticky;
       top: 0;
       z-index: 20;
@@ -49,21 +47,47 @@
 
     .brand {
       font-weight: 800;
-      font-size: 1.05rem;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-right {
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
+    .online-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(34, 197, 94, 0.14);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #86efac;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
     .wallet-pill {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: var(--card);
       border: 1px solid var(--border);
-      padding: 6px 10px;
+      padding: 5px 10px;
       border-radius: 999px;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       font-weight: 700;
     }
 
@@ -72,7 +96,7 @@
       color: #111827;
       padding: 2px 7px;
       border-radius: 999px;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 800;
       display: none;
     }
@@ -131,13 +155,13 @@
 
     h2 {
       margin: 0 0 8px;
-      font-size: 1.1rem;
+      font-size: 1.08rem;
     }
 
     p.hint {
       margin: 0 0 12px;
       color: var(--muted);
-      font-size: 0.88rem;
+      font-size: 0.87rem;
       line-height: 1.45;
     }
 
@@ -170,12 +194,10 @@
       border-radius: 10px;
       padding: 11px 14px;
       font-weight: 800;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       cursor: pointer;
       flex: 1;
       min-width: 120px;
-      text-align: center;
-      text-decoration: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -199,9 +221,25 @@
       border: 1px solid var(--border);
       color: var(--text);
       border-radius: 10px;
-      padding: 11px 12px;
-      font-size: 0.92rem;
+      padding: 10px 12px;
+      font-size: 0.9rem;
       margin-bottom: 10px;
+    }
+
+    .online-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .online-chip {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      color: #e2e8f0;
     }
 
     .status-box {
@@ -209,10 +247,22 @@
       border: 1px dashed var(--border);
       border-radius: 10px;
       padding: 10px 12px;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       color: var(--muted);
       margin-top: 10px;
       word-break: break-word;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    th, td {
+      padding: 9px 6px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
     }
 
     .toast {
@@ -236,26 +286,20 @@
     .toast.show {
       opacity: 1;
     }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-
-    th, td {
-      padding: 9px 6px;
-      border-bottom: 1px solid var(--border);
-      text-align: left;
-    }
   </style>
 </head>
 <body>
   <header>
     <div class="brand">⚫⚪ Go Online</div>
-    <div class="wallet-pill">
-      <span>🪙 <strong id="fichasCount">50</strong></span>
-      <span id="vipBadge" class="vip-badge">VIP</span>
+    <div class="header-right">
+      <div class="online-pill" title="Jogadores ativos">
+        <span class="dot"></span>
+        <span id="onlineCount">1 online</span>
+      </div>
+      <div class="wallet-pill">
+        <span>🪙 <strong id="fichasCount">50</strong></span>
+        <span id="vipBadge" class="vip-badge">VIP</span>
+      </div>
     </div>
   </header>
 
@@ -268,6 +312,12 @@
   <main>
     <!-- TABULEIRO -->
     <section id="tabuleiro" class="tab-panel active">
+      <div class="card">
+        <h2>Pessoal Online Agora</h2>
+        <p class="hint" id="onlineModeHint">Modo local ativo. Adicione o link do Firebase Realtime Database no código para ver outros celulares ao vivo.</p>
+        <div class="online-list" id="onlineList"></div>
+      </div>
+
       <div class="card">
         <h2>Partida de Go (9x9)</h2>
         <p class="hint" id="turnInfo">Vez das Pretas (Você). Toque em uma interseção para jogar.</p>
@@ -284,8 +334,15 @@
     <!-- RANKING -->
     <section id="ranking" class="tab-panel">
       <div class="card">
-        <h2>Ranking Local</h2>
-        <p class="hint">Pontuação salva neste dispositivo.</p>
+        <h2>Seu Perfil no Ranking</h2>
+        <p class="hint">Escolha como seu nome aparece no ranking e na lista de online.</p>
+        <input class="field" id="playerNameInput" type="text" maxlength="20" placeholder="Digite seu nome ou apelido" />
+        <button class="btn" id="saveNameBtn">Salvar Nome no Ranking</button>
+      </div>
+
+      <div class="card">
+        <h2>Ranking</h2>
+        <p class="hint" id="rankingModeText">Exibindo placar local (conecta ao banco ao configurar FIREBASE_DB_URL).</p>
         <table>
           <thead>
             <tr>
@@ -305,11 +362,11 @@
       <div class="card">
         <h2>Receber Dinheiro Real (Pix & Link)</h2>
         <p class="hint">
-          Sua chave Pix já está configurada. Você também pode adicionar um link de pagamento real (ex.: Mercado Pago, InfinitePay ou checkout) para abrir direto no navegador.
+          Sua chave Pix está configurada. Você também pode adicionar um link de pagamento real (ex.: Mercado Pago, InfinitePay ou checkout).
         </p>
 
         <label class="hint" style="display:block;margin-bottom:4px;">Sua Chave Pix</label>
-        <input class="field" id="pixInput" type="text" placeholder="Ex.: seuemail@dominio.com ou chave aleatória" />
+        <input class="field" id="pixInput" type="text" placeholder="Chave Pix" />
 
         <label class="hint" style="display:block;margin-bottom:4px;">Link de Pagamento Real (URL https://...)</label>
         <input class="field" id="payLinkInput" type="url" placeholder="https://link-de-pagamento-real.com/seu-produto" />
@@ -331,7 +388,7 @@
       <div class="card">
         <h2>Pacotes & Liberação Após Pagamento</h2>
         <p class="hint">
-          Para evitar que alguém ganhe fichas ou VIP de graça sem pagar, libere usando um código de confirmação definido por você após conferir o pagamento.
+          Para evitar que alguém ganhe fichas ou VIP de graça sem pagar, libere usando o código de confirmação após conferir o pagamento.
         </p>
 
         <label class="hint" style="display:block;margin-bottom:4px;">Código de Confirmação do Criador (padrão: GO2026)</label>
@@ -351,16 +408,22 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    // ====== CONFIGURAÇÃO PADRÃO DO CRIADOR ======
+    // ====== CONFIGURAÇÃO DO CRIADOR ======
     const DEFAULT_PIX = "e2dd5b9e-de3b-4a07-a14e-76172ed64a3a";
     const DEFAULT_PAY_LINK = "";
     const DEFAULT_UNLOCK_CODE = "GO2026";
 
-    const STORAGE_KEY = "go_online_state_v1";
+    // Cole aqui a URL do seu Firebase Realtime Database (ex.: "https://meu-app-default-rtdb.firebaseio.com")
+    // Deixe vazio "" para rodar apenas localmente sem servidor externo.
+    const FIREBASE_DB_URL = "";
+
+    const STORAGE_KEY = "go_online_state_v2";
     const state = loadState();
 
     function loadState() {
       const fallback = {
+        playerId: "p_" + Math.random().toString(36).slice(2, 10),
+        playerName: "Jogador",
         fichas: 50,
         wins: 0,
         vip: false,
@@ -372,6 +435,7 @@
         const raw = localStorage.getItem(STORAGE_KEY);
         const parsed = raw ? { ...fallback, ...JSON.parse(raw) } : fallback;
         if (!parsed.pix) parsed.pix = DEFAULT_PIX;
+        if (!parsed.playerId) parsed.playerId = fallback.playerId;
         return parsed;
       } catch {
         return fallback;
@@ -383,8 +447,8 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       } catch {}
       renderHeader();
-      renderRanking();
       renderPaymentPanel();
+      syncPresenceAndRanking();
     }
 
     function showToast(msg) {
@@ -408,28 +472,153 @@
     function renderHeader() {
       document.getElementById("fichasCount").textContent = state.fichas;
       document.getElementById("vipBadge").classList.toggle("active", Boolean(state.vip));
+      document.getElementById("playerNameInput").value = state.playerName || "Jogador";
     }
 
-    function renderRanking() {
-      const tbody = document.getElementById("rankingBody");
-      const rows = [
-        { name: "Você", wins: state.wins, fichas: state.fichas },
-        { name: "Mestre Kenji", wins: 5, fichas: 210 },
-        { name: "Ana Go", wins: 3, fichas: 140 }
-      ].sort((a, b) => b.wins - a.wins || b.fichas - a.fichas);
+    // ====== RANKING & ONLINE (LOCAL + FIREBASE REALTIME REST) ======
+    let onlinePlayersMap = {};
+    let rankingPlayersMap = {};
 
-      tbody.innerHTML = rows
+    function getCleanDbUrl() {
+      return (FIREBASE_DB_URL || "").trim().replace(/\/+$/, "");
+    }
+
+    function renderOnlineAndRanking() {
+      const dbUrl = getCleanDbUrl();
+      const now = Date.now();
+      const activeThresholdMs = 45000; // ativo nos últimos 45s
+
+      let activeList = [];
+      if (dbUrl) {
+        activeList = Object.values(onlinePlayersMap || {}).filter(
+          (p) => p && p.name && now - Number(p.lastSeen || 0) <= activeThresholdMs
+        );
+        if (!activeList.some((p) => p.id === state.playerId)) {
+          activeList.unshift({
+            id: state.playerId,
+            name: state.playerName || "Jogador",
+            lastSeen: now
+          });
+        }
+        document.getElementById("onlineModeHint").textContent =
+          "Conectado ao banco em tempo real: mostra jogadores ativos recentemente.";
+      } else {
+        activeList = [
+          { id: state.playerId, name: `${state.playerName || "Jogador"} (Você)`, lastSeen: now }
+        ];
+        document.getElementById("onlineModeHint").textContent =
+          "Sem banco online configurado (FIREBASE_DB_URL vazio): apenas seu dispositivo aparece aqui.";
+      }
+
+      document.getElementById("onlineCount").textContent = `${activeList.length} online`;
+      document.getElementById("onlineList").innerHTML = activeList
+        .map((p) => `<span class="online-chip">🟢 ${escapeHtml(p.name)}</span>`)
+        .join("");
+
+      // Ranking
+      let boardRows = [];
+      if (dbUrl) {
+        const merged = { ...(rankingPlayersMap || {}) };
+        merged[state.playerId] = {
+          id: state.playerId,
+          name: state.playerName || "Jogador",
+          wins: Number(state.wins || 0),
+          fichas: Number(state.fichas || 0)
+        };
+        boardRows = Object.values(merged);
+        document.getElementById("rankingModeText").textContent =
+          "Ranking compartilhado entre dispositivos conectados ao banco.";
+      } else {
+        boardRows = [
+          {
+            id: state.playerId,
+            name: `${state.playerName || "Jogador"} (Você)`,
+            wins: Number(state.wins || 0),
+            fichas: Number(state.fichas || 0)
+          }
+        ];
+        document.getElementById("rankingModeText").textContent =
+          "Ranking local deste aparelho (configure FIREBASE_DB_URL para ranking entre vários jogadores).";
+      }
+
+      boardRows.sort((a, b) => (b.wins || 0) - (a.wins || 0) || (b.fichas || 0) - (a.fichas || 0));
+
+      document.getElementById("rankingBody").innerHTML = boardRows
         .map(
-          (r, i) => `
+          (r, idx) => `
           <tr>
-            <td>${i + 1}</td>
-            <td>${r.name}</td>
-            <td>${r.wins}</td>
-            <td>${r.fichas}</td>
+            <td>${idx + 1}</td>
+            <td>${escapeHtml(r.name || "Jogador")}</td>
+            <td>${Number(r.wins || 0)}</td>
+            <td>${Number(r.fichas || 0)}</td>
           </tr>`
         )
         .join("");
     }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    async function syncPresenceAndRanking() {
+      renderOnlineAndRanking();
+      const dbUrl = getCleanDbUrl();
+      if (!dbUrl) return;
+
+      const payloadPresence = {
+        id: state.playerId,
+        name: state.playerName || "Jogador",
+        lastSeen: Date.now()
+      };
+
+      const payloadRanking = {
+        id: state.playerId,
+        name: state.playerName || "Jogador",
+        wins: Number(state.wins || 0),
+        fichas: Number(state.fichas || 0)
+      };
+
+      try {
+        await Promise.all([
+          fetch(`${dbUrl}/online/${encodeURIComponent(state.playerId)}.json`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payloadPresence)
+          }),
+          fetch(`${dbUrl}/ranking/${encodeURIComponent(state.playerId)}.json`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payloadRanking)
+          })
+        ]);
+
+        const [onlineRes, rankingRes] = await Promise.all([
+          fetch(`${dbUrl}/online.json`),
+          fetch(`${dbUrl}/ranking.json`)
+        ]);
+
+        if (onlineRes.ok) {
+          onlinePlayersMap = (await onlineRes.json()) || {};
+        }
+        if (rankingRes.ok) {
+          rankingPlayersMap = (await rankingRes.json()) || {};
+        }
+        renderOnlineAndRanking();
+      } catch {
+        // Falha de rede silenciosa para não travar o jogo
+      }
+    }
+
+    document.getElementById("saveNameBtn").addEventListener("click", () => {
+      const typed = document.getElementById("playerNameInput").value.trim();
+      state.playerName = typed || "Jogador";
+      saveState();
+      showToast("Nome salvo no ranking!");
+    });
 
     // ====== LOJA & RECEBIMENTO REAL ======
     const pixInput = document.getElementById("pixInput");
@@ -454,7 +643,7 @@
         return;
       }
       state.payLink = rawLink;
-      state.unlockCode = (secretCodeInput.value.trim() || DEFAULT_UNLOCK_CODE);
+      state.unlockCode = secretCodeInput.value.trim() || DEFAULT_UNLOCK_CODE;
       saveState();
       showToast("Dados de recebimento salvos!");
     });
@@ -714,9 +903,10 @@
     document.getElementById("resetBtn").addEventListener("click", resetBoard);
 
     renderHeader();
-    renderRanking();
     renderPaymentPanel();
     drawBoard();
+    syncPresenceAndRanking();
+    setInterval(syncPresenceAndRanking, 15000);
   </script>
 </body>
 </html>
