@@ -3,20 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Pouzinho — Bicho Virtual</title>
+  <title>Pouzinho — Seu Bicho Virtual</title>
   <style>
     :root {
-      --bg: #080d18;
-      --card: #111927;
-      --card-2: #1a2436;
-      --text: #f9fafb;
-      --muted: #9ca3af;
-      --accent: #22c55e;
-      --gold: #f59e0b;
-      --blue: #38bdf8;
+      --bg: #070b14;
+      --surface: #111827;
+      --surface-2: #182234;
+      --surface-3: #223049;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --green: #22c55e;
+      --green-dark: #15803d;
+      --gold: #fbbf24;
       --pink: #f472b6;
+      --cyan: #38bdf8;
       --purple: #a855f7;
-      --border: #273449;
+      --border: rgba(148, 163, 184, 0.16);
+      --radius: 18px;
     }
 
     * {
@@ -28,574 +31,98 @@
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
+      background: radial-gradient(circle at 50% -10%, #172542 0%, var(--bg) 55%);
       color: var(--text);
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
     }
 
-    header {
+    .app {
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 12px 14px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Topo */
+    .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 14px;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
+      padding: 10px 14px;
+      background: rgba(17, 24, 39, 0.88);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
       position: sticky;
-      top: 0;
+      top: 10px;
       z-index: 20;
     }
 
     .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-weight: 900;
       font-size: 1rem;
+      letter-spacing: 0.2px;
     }
 
-    .pill {
-      background: var(--card-2);
-      border: 1px solid var(--border);
-      padding: 5px 11px;
+    .brand-badge {
+      background: linear-gradient(135deg, var(--green), var(--cyan));
+      color: #04130b;
+      font-size: 0.7rem;
+      font-weight: 900;
+      padding: 2px 7px;
       border-radius: 999px;
-      font-size: 0.86rem;
-      font-weight: 800;
     }
 
-    nav.tabs {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
+    .coins-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.18), rgba(245, 158, 11, 0.08));
+      border: 1px solid rgba(251, 191, 36, 0.45);
+      color: #fde68a;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 0.9rem;
     }
 
-    nav.tabs button {
-      background: transparent;
-      border: none;
-      color: var(--muted);
-      padding: 11px 4px;
-      font-weight: 800;
-      font-size: 0.82rem;
-      border-bottom: 3px solid transparent;
-      cursor: pointer;
-    }
-
-    nav.tabs button.active {
-      color: var(--text);
-      border-bottom-color: var(--accent);
-      background: rgba(34, 197, 94, 0.08);
-    }
-
-    main {
-      flex: 1;
-      width: 100%;
-      max-width: 580px;
-      margin: 0 auto;
-      padding: 12px;
-    }
-
-    .panel-tab {
-      display: none;
-    }
-
-    .panel-tab.active {
-      display: block;
-    }
-
-    .card {
-      background: var(--card);
+    /* Cartão principal do bicho */
+    .pet-card {
+      background: linear-gradient(180deg, #152035 0%, var(--surface) 100%);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 13px;
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+    }
+
+    .pet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
       margin-bottom: 12px;
     }
 
-    .pet-top {
+    .pet-identity {
       display: flex;
-      justify-content: space-between;
       align-items: center;
       gap: 8px;
-      margin-bottom: 10px;
+      flex-wrap: wrap;
     }
 
     .pet-name {
+      font-size: 1.08rem;
       font-weight: 900;
-      font-size: 1.02rem;
     }
 
-    .pet-status {
-      font-size: 0.8rem;
-      color: #86efac;
-      font-weight: 700;
-      text-align: right;
-    }
-
-    .meters {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 7px;
-      margin-bottom: 10px;
-    }
-
-    .meter {
-      background: var(--card-2);
+    .lvl-pill {
+      background: var(--surface-3);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 7px 8px;
-    }
-
-    .meter-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.74rem;
-      font-weight: 800;
-      margin-bottom: 4px;
-    }
-
-    .bar-bg {
-      height: 7px;
-      background: #090e18;
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .bar-fill {
-      height: 100%;
-      width: 80%;
-      border-radius: 999px;
-      transition: width 0.25s ease;
-    }
-
-    .stage-wrap {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 10px;
-    }
-
-    canvas#stage {
-      width: 100%;
-      max-width: 400px;
-      aspect-ratio: 4 / 3;
-      background: radial-gradient(circle at top, #1b2d47, #090e1a 78%);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      touch-action: manipulation;
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
-    }
-
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
-
-    .menu-grid.cols-3 {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .item-btn {
-      background: var(--card-2);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      padding: 10px 8px;
-      font-weight: 800;
-      font-size: 0.8rem;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-    }
-
-    .item-btn small {
-      color: var(--muted);
-      font-size: 0.7rem;
-      font-weight: 700;
-    }
-
-    .item-btn:active {
-      transform: scale(0.98);
-      border-color: var(--accent);
-    }
-
-    .btn {
-      background: var(--accent);
-      color: #052e16;
-      border: none;
-      border-radius: 10px;
-      padding: 11px 12px;
-      font-weight: 900;
-      font-size: 0.86rem;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    .btn.secondary {
-      background: var(--card-2);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .btn.gold {
-      background: var(--gold);
-      color: #111827;
-    }
-
-    h2 {
-      margin: 0 0 6px;
-      font-size: 1.04rem;
-    }
-
-    p.hint {
-      margin: 0 0 10px;
-      color: var(--muted);
-      font-size: 0.84rem;
-      line-height: 1.4;
-    }
-
-    input.field {
-      width: 100%;
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 0.9rem;
-      margin-bottom: 10px;
-    }
-
-    .pet-picker {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
-
-    .pet-card {
-      background: var(--card-2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px;
-      text-align: center;
-      cursor: pointer;
-      font-weight: 800;
-      font-size: 0.86rem;
-    }
-
-    .pet-card.selected {
-      border-color: var(--accent);
-      background: rgba(34, 197, 94, 0.14);
-      color: #86efac;
-    }
-
-    /* Modal de Trabalho / Brincar */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(3, 7, 18, 0.82);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      z-index: 40;
-    }
-
-    .modal-backdrop.open {
-      display: flex;
-    }
-
-    .modal-box {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-    }
-
-    .work-arena {
-      position: relative;
-      height: 210px;
-      background: #070c16;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      margin: 10px 0 12px;
-      overflow: hidden;
-    }
-
-    .target-btn {
-      position: absolute;
-      width: 54px;
-      height: 54px;
-      border-radius: 50%;
-      border: 2px solid #fff;
-      background: var(--gold);
-      color: #111827;
-      font-weight: 900;
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #030712;
-      color: var(--text);
-      border: 1px solid var(--accent);
-      padding: 10px 16px;
-      border-radius: 999px;
-      font-size: 0.84rem;
-      font-weight: 800;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-      z-index: 60;
-      white-space: nowrap;
-    }
-
-    .toast.show {
-      opacity: 1;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <div class="brand">🐾 Pouzinho</div>
-    <div class="pill">🪙 <span id="coinsEl">60</span></div>
-  </header>
-
-  <nav class="tabs">
-    <button class="active" data-tab="comerTab">Comer/Beber</button>
-    <button data-tab="fazerTab">Brincar/Job</button>
-    <button data-tab="bichoTab">Bichos</button>
-    <button data-tab="quartoTab">Quarto</button>
-  </nav>
-
-  <main>
-    <!-- HUD COMUM DO BICHO -->
-    <div class="card">
-      <div class="pet-top">
-        <div class="pet-name" id="petTitleEl">Gatinho • Nv. 1</div>
-        <div class="pet-status" id="petStatusEl">Pronto pra curtir!</div>
-      </div>
-
-      <div class="meters">
-        <div class="meter">
-          <div class="meter-label"><span>🍖 Fome</span><span id="hungerVal">80%</span></div>
-          <div class="bar-bg"><div class="bar-fill" id="hungerBar" style="background:#22c55e;"></div></div>
-        </div>
-        <div class="meter">
-          <div class="meter-label"><span>😄 Humor</span><span id="happyVal">80%</span></div>
-          <div class="bar-bg"><div class="bar-fill" id="happyBar" style="background:#f472b6;"></div></div>
-        </div>
-        <div class="meter">
-          <div class="meter-label"><span>⚡ Energia</span><span id="energyVal">80%</span></div>
-          <div class="bar-bg"><div class="bar-fill" id="energyBar" style="background:#38bdf8;"></div></div>
-        </div>
-      </div>
-
-      <div class="stage-wrap">
-        <canvas id="stage" width="380" height="260"></canvas>
-      </div>
-    </div>
-
-    <!-- ABA 1: COMIDA & BEBIDA -->
-    <section id="comerTab" class="panel-tab active">
-      <div class="card">
-        <h2>Comidas</h2>
-        <p class="hint">Enchem a barriga e dão energia.</p>
-        <div class="menu-grid cols-3">
-          <button class="item-btn" onclick="eatItem('Maçã', 4, 15, 5, 4)">
-            🍎 Maçã
-            <small>4 🪙 • +15 Fome</small>
-          </button>
-          <button class="item-btn" onclick="eatItem('Hambúrguer', 9, 32, 8, 8)">
-            🍔 Burger
-            <small>9 🪙 • +32 Fome</small>
-          </button>
-          <button class="item-btn" onclick="eatItem('Bolo Doce', 12, 25, 18, 6)">
-            🎂 Bolo
-            <small>12 🪙 • +18 Humor</small>
-          </button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Bebidas</h2>
-        <p class="hint">Refrescam, dão energia ou animam o bicho.</p>
-        <div class="menu-grid cols-3">
-          <button class="item-btn" onclick="drinkItem('Água Fresca', 2, 6, 6, 12)">
-            💧 Água
-            <small>2 🪙 • +12 Energia</small>
-          </button>
-          <button class="item-btn" onclick="drinkItem('Suco Tropical', 6, 10, 14, 15)">
-            🧃 Suco
-            <small>6 🪙 • +15 Energia</small>
-          </button>
-          <button class="item-btn" onclick="drinkItem('Energético', 10, 5, 10, 30)">
-            ⚡ Turbo
-            <small>10 🪙 • +30 Energia</small>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ABA 2: BRINCAR & TRABALHO -->
-    <section id="fazerTab" class="panel-tab">
-      <div class="card">
-        <h2>Brincar & Trabalho</h2>
-        <p class="hint">Faça trabalho rápido pra ganhar moedas, brinque pra subir o humor ou bote pra dormir.</p>
-        <div class="menu-grid">
-          <button class="item-btn" onclick="openMiniGame('work')">
-            💼 Trabalhar (Ganhar 🪙)
-            <small>Acerte alvos em 10s</small>
-          </button>
-          <button class="item-btn" onclick="openMiniGame('play')">
-            🎾 Brincar (+Humor)
-            <small>Gasta energia • +XP</small>
-          </button>
-          <button class="item-btn" onclick="petCarinho()">
-            💖 Dar Carinho
-            <small>Grátis • +Humor</small>
-          </button>
-          <button class="item-btn" onclick="toggleSleep()">
-            💤 Dormir / Acordar
-            <small>Recupera energia</small>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ABA 3: ESCOLHER BICHO -->
-    <section id="bichoTab" class="panel-tab">
-      <div class="card">
-        <h2>Escolha seu Bicho</h2>
-        <p class="hint">Troque o visual do seu bicho quando quiser.</p>
-        <div class="pet-picker" id="petPicker"></div>
-      </div>
-    </section>
-
-    <!-- ABA 4: QUARTO / NOME -->
-    <section id="quartoTab" class="panel-tab">
-      <div class="card">
-        <h2>Nome do Bicho</h2>
-        <p class="hint">Dê um apelido para o seu bichinho.</p>
-        <input class="field" id="customNameInput" type="text" maxlength="16" placeholder="Ex.: Mingau, Pipoca, Thor" />
-        <button class="btn" id="saveNameBtn">Salvar Nome</button>
-      </div>
-
-      <div class="card">
-        <h2>Estatísticas</h2>
-        <p class="hint" id="statsText">XP: 0 • Trabalhos concluídos: 0</p>
-        <button class="btn secondary" id="resetSaveBtn">Resetar Progresso</button>
-      </div>
-    </section>
-  </main>
-
-  <!-- MODAL DO MINIJOGO (TRABALHO / BRINCAR) -->
-  <div class="modal-backdrop" id="gameModal">
-    <div class="modal-box">
-      <h2 id="modalTitle">Trabalhando!</h2>
-      <p class="hint" id="modalSub">Toque nos alvos antes do tempo acabar!</p>
-      <div style="display:flex;justify-content:space-between;font-weight:800;font-size:0.86rem;">
-        <span>Tempo: <span id="timerEl">10</span>s</span>
-        <span>Acertos: <span id="hitsEl">0</span></span>
-      </div>
-      <div class="work-arena" id="workArena"></div>
-      <button class="btn secondary" id="closeModalBtn">Fechar</button>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
-
-  <script>
-    const SPECIES = [
-      { id: "cat", label: "🐱 Gatinho", body: "#f59e0b", ear: "#d97706" },
-      { id: "dog", label: "🐶 Cachorrinho", body: "#d97706", ear: "#78350f" },
-      { id: "bunny", label: "🐰 Coelhinho", body: "#f472b6", ear: "#ec4899" },
-      { id: "alien", label: "👾 Alienzinho", body: "#22c55e", ear: "#16a34a" }
-    ];
-
-    const SAVE_KEY = "pouzinho_save_v1";
-    const state = loadState();
-
-    let sleeping = false;
-    let hopY = 0;
-    let hopVel = 0;
-    let breath = 0;
-    let blink = 0;
-    let popups = [];
-
-    // Estado do minijogo
-    let modalMode = null;
-    let gameTimerId = null;
-    let moveTargetId = null;
-    let timeLeft = 10;
-    let hits = 0;
-
-    function clamp(v, min, max) {
-      return Math.max(min, Math.min(max, v));
-    }
-
-    function loadState() {
-      const def = {
-        species: "cat",
-        customName: "",
-        coins: 60,
-        xp: 0,
-        jobsDone: 0,
-        hunger: 80,
-        happy: 80,
-        energy: 80
-      };
-      try {
-        const raw = localStorage.getItem(SAVE_KEY);
-        return raw ? { ...def, ...JSON.parse(raw) } : def;
-      } catch {
-        return def;
-      }
-    }
-
-    function save() {
-      try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch {}
-      renderUI();
-    }
-
-    function toast(msg) {
-      const el = document.getElementById("toast");
-      el.textContent = msg;
-      el.classList.add("show");
-      clearTimeout(window.__toast);
-      window.__toast = setTimeout(() => el.classList.remove("show"), 2200);
-    }
-
-    function addPopup(txt, color = "#fde047") {
-      popups.push({ txt, color, x: 190, y: 95, alpha: 1 });
-    }
-
-    // Abas
-    document.querySelectorAll("nav.tabs button").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll("nav.tabs button").forEach((b) => b.classList.remove("active"));
-        document.querySelectorAll(".panel-tab").forEach((p) => p.classList.remove("active"));
-        btn.classList.add("active");
-        document.getElementById(btn.dataset.tab).classList.add("active");
-      });
-    });
-
-    function getSpec() {
-      return SPECIES.find((s) => s.id === state.species) || SPECIES[0];
-    }
-
-    function getLevel() {
-      return 1 + Math.floor(state.xp / 50);
-    }
-
-    function renderUI() {
-      const spec = getSpec();
-      const displayName = state.customName.
